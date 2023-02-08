@@ -1,0 +1,17 @@
+* {
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100%;
+    display: flex;
+    min-height: 100vh;
+}
+
+.property {
+    width: 30%;
+    background: lightgoldenrodyellow;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+}
