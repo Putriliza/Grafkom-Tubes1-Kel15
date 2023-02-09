@@ -7,7 +7,6 @@ const canvas = document.getElementById('canvas');
 const drawAction = (model) => {
   if (drawState == '') {
     drawState = model;
-    console.log('masuk');
     if (model == 'line') {
       objects.push(new Line(objects.length));
     }
@@ -102,3 +101,17 @@ const getMouseCoor = (e) => {
   const y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
   return [x, y];
 };
+
+function flatten(v) {
+    let n = v.length * v[0].length;
+    const floats = new Float32Array(n);
+  
+    let i = 0;
+    v.forEach((row) => {
+      row.forEach((col) => {
+        floats[i++] = col;
+      });
+    });
+    
+    return floats;
+  }
