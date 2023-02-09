@@ -35,6 +35,8 @@ class Line extends Model {
       verticesCoor.push(v.coor);
     });
 
+    const vBuffer = gl.createBuffer();
+
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(verticesCoor), gl.STATIC_DRAW);
     const vPosition = gl.getAttribLocation(program, 'vPosition');

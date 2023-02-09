@@ -2,16 +2,23 @@
     box-sizing: border-box;
 }
 
-.container {
-    width: 100%;
+.container{
+    margin: 0;
+    padding: 0;
     display: flex;
+    flex-direction: row;
     min-height: 100vh;
 }
 
-.property {
+#property-bar{
     width: 30%;
+    height: 100%;
     background: lightgoldenrodyellow;
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 20px;
+}
+
+canvas {
+    height: 500px;
 }

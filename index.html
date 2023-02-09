@@ -1,31 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WebGL - 2D Web Based CAD</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css" /> 
+    <script type="text/javascript" src="Model.js"></script>
   </head>
+
   <body>
     <div id="container" class="container">
-        <div id="property" class="property">
-            <h3>Draw New Object</h3>
-            <div class="property__item">
-                <label for="object">Object</label>
-                <select name="object" id="object">
-                    <option value="line">Line</option>
-                    <option value="square">Square</option>
-                    <option value="rectangle">Rectangle</option>
-                    <option value="polygon">Polygon</option>
-                </select>
-            </div>
-        </div>
-        <div id="canvas" class="canvas">
-        </div>
+      <div id="property-bar">
+        <h3>Draw New Object</h3>
+        <button class="draw-button" id="line" onclick="drawAction(id)">Line</button>
+      </div>
+      <div class="base-canvas">
+        <canvas id="canvas" onmousemove="mouseHandler(event)" width="750," height="750">
+        </canvas>
+      </div>
     </div>
-    
-
   </body>
   <script type="text/javascript" src="script.js"></script>
 </html>
