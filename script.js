@@ -9,9 +9,17 @@ const drawAction = (model) => {
     drawState = model;
     if (model == 'line') {
       objects.push(new Line(objects.length));
+    } else if (model == 'polygon') {
+      objects.push(new Polygon(objects.length));
     }
-  }
+  } 
 };
+
+const endDraw = (model) =>{
+  if (drawState == 'polygon'){
+    drawState = ''
+  }
+}
 
 const mouseHandler = (e) => {
   currentCoor = getMouseCoor(e);
@@ -31,6 +39,16 @@ canvas.addEventListener('mouseup', (e) => {
     obj.vertices[0].coor = currentCoor;
   } else if (drawState == 'line2') {
     drawState = '';
+  } else if (drawState == 'polygon') {
+
+    let isFirstVertice = obj.vertices[0].coor[0] === 0 && obj.vertices[0].coor[1] === 0
+
+    if (isFirstVertice){
+      obj.vertices[0].coor = currentCoor;
+    } else{
+      obj.addVertex(currentCoor, [0, 0, 0, 1]);
+    }
+    
   }
 });
 
