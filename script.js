@@ -9,6 +9,8 @@ const drawAction = (model) => {
     drawState = model;
     if (model == 'line') {
       objects.push(new Line(objects.length));
+    } else if (model == 'rectangle') {
+      objects.push(new Rectangle(objects.length))
     } else if (model == 'polygon') {
       objects.push(new Polygon(objects.length));
     }
@@ -27,6 +29,17 @@ const mouseHandler = (e) => {
 
   if (drawState == 'line2') {
     obj.vertices[obj.vertices.length - 1].coor = currentCoor;
+  } else if (drawState == 'rectangle2') {
+    startPointX = obj.vertices[0].coor[0];
+    startPointY = obj.vertices[0].coor[1];
+    endPointX = currentCoor[0];
+    endPointY = currentCoor[1];
+
+    obj.vertices[1].coor = [startPointX, endPointY];
+    obj.vertices[2].coor = [endPointX, startPointY];
+    obj.vertices[3].coor = [endPointX, startPointY];
+    obj.vertices[4].coor = currentCoor;
+    obj.vertices[5].coor = [startPointX, endPointY];
   }
 };
 
@@ -39,6 +52,17 @@ canvas.addEventListener('mouseup', (e) => {
     obj.vertices[0].coor = currentCoor;
   } else if (drawState == 'line2') {
     drawState = '';
+  } else if (drawState == 'rectangle') {
+    obj.vertices[0].coor = currentCoor;
+    drawState = 'rectangle2';
+  } else if (drawState == 'rectangle2') {
+    drawState = '';
+    console.log(obj.vertices[0].coor);
+    console.log(obj.vertices[1].coor);
+    console.log(obj.vertices[2].coor);
+    console.log(obj.vertices[3].coor);
+    console.log(obj.vertices[4].coor);
+    console.log(obj.vertices[5].coor);
   } else if (drawState == 'polygon') {
 
     let isFirstVertice = obj.vertices[0].coor[0] === 0 && obj.vertices[0].coor[1] === 0
