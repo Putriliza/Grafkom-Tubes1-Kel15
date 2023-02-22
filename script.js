@@ -3,6 +3,14 @@ let drawState = '';
 // contoh flow drawState line : '' -> 'Line' -> 'Line2' -> ''
 
 const canvas = document.getElementById('canvas');
+const drawButtons = document.querySelectorAll('.draw-button');
+console.log(drawButtons);
+
+drawButtons.forEach((button) => {
+  button.addEventListener('click', (e) => {
+    drawAction(e.target.id);
+  });
+});
 
 const drawAction = (model) => {
   if (drawState == '') {
@@ -23,7 +31,7 @@ const endDraw = (model) =>{
   }
 }
 
-const mouseHandler = (e) => {
+canvas.addEventListener('mousemove', (e) => {
   currentCoor = getMouseCoor(e);
   let obj = objects[objects.length - 1];
 
@@ -41,7 +49,7 @@ const mouseHandler = (e) => {
     obj.vertices[4].coor = currentCoor;
     obj.vertices[5].coor = [startPointX, endPointY];
   }
-};
+});
 
 canvas.addEventListener('mouseup', (e) => {
   currentCoor = getMouseCoor(e);
@@ -50,6 +58,7 @@ canvas.addEventListener('mouseup', (e) => {
   if (drawState == 'line') {
     drawState = 'line2';
     obj.vertices[0].coor = currentCoor;
+    obj.vertices[1].coor = currentCoor;
   } else if (drawState == 'line2') {
     drawState = '';
   } else if (drawState == 'rectangle') {
