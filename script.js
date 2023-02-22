@@ -17,8 +17,10 @@ const drawAction = (model) => {
     drawState = model;
     if (model == 'line') {
       objects.push(new Line(objects.length));
+    } else if (model == 'square') {
+      objects.push(new Square(objects.length));
     } else if (model == 'rectangle') {
-      objects.push(new Rectangle(objects.length))
+      objects.push(new Rectangle(objects.length));
     } else if (model == 'polygon') {
       objects.push(new Polygon(objects.length));
     }
@@ -37,6 +39,55 @@ canvas.addEventListener('mousemove', (e) => {
 
   if (drawState == 'line2') {
     obj.vertices[obj.vertices.length - 1].coor = currentCoor;
+
+  } else if (drawState == 'square2') {
+    startPointX = obj.vertices[0].coor[0];
+    startPointY = obj.vertices[0].coor[1];
+    endPointX = currentCoor[0];
+    endPointY = currentCoor[1];
+
+    squareSide = Math.max(dist([startPointX, startPointY], [endPointX, startPointY]), dist([startPointX, startPointY], [startPointX, endPointY]));
+
+    if ( startPointX < endPointX ) {
+
+      if ( startPointY < endPointY) { // Kuadran 1
+        obj.vertices[1].coor = [startPointX, startPointY + squareSide];
+        obj.vertices[2].coor = [startPointX + squareSide, startPointY];
+        obj.vertices[3].coor = [startPointX + squareSide, startPointY];
+        obj.vertices[4].coor = [startPointX + squareSide, startPointY + squareSide];
+        obj.vertices[5].coor = [startPointX, startPointY + squareSide];
+
+      } else { // Kuadran 4
+        obj.vertices[1].coor = [startPointX, startPointY - squareSide];
+        obj.vertices[2].coor = [startPointX + squareSide, startPointY];
+        obj.vertices[3].coor = [startPointX + squareSide, startPointY];
+        obj.vertices[4].coor = [startPointX + squareSide, startPointY - squareSide];
+        obj.vertices[5].coor = [startPointX, startPointY - squareSide];
+
+      }
+      // console.log([obj.vertices[0].coor, obj.vertices[1].coor, obj.vertices[2].coor, obj.vertices[3].coor, obj.vertices[4].coor, obj.vertices[5].coor]);
+
+    } else {
+
+      if ( startPointY < endPointY) { // Kuadran 2
+        obj.vertices[1].coor = [startPointX, startPointY + squareSide];
+        obj.vertices[2].coor = [startPointX - squareSide, startPointY];
+        obj.vertices[3].coor = [startPointX - squareSide, startPointY];
+        obj.vertices[4].coor = [startPointX - squareSide, startPointY + squareSide];
+        obj.vertices[5].coor = [startPointX, startPointY + squareSide];
+
+      } else { // Kuadran 3
+        obj.vertices[1].coor = [startPointX, startPointY - squareSide];
+        obj.vertices[2].coor = [startPointX - squareSide, startPointY];
+        obj.vertices[3].coor = [startPointX - squareSide, startPointY];
+        obj.vertices[4].coor = [startPointX - squareSide, startPointY - squareSide];
+        obj.vertices[5].coor = [startPointX, startPointY - squareSide];
+
+      }
+
+    }
+    
+    
   } else if (drawState == 'rectangle2') {
     startPointX = obj.vertices[0].coor[0];
     startPointY = obj.vertices[0].coor[1];
@@ -59,19 +110,24 @@ canvas.addEventListener('mouseup', (e) => {
     drawState = 'line2';
     obj.vertices[0].coor = currentCoor;
     obj.vertices[1].coor = currentCoor;
+
   } else if (drawState == 'line2') {
     drawState = '';
+
+  } else if (drawState == 'square') {
+    obj.vertices[0].coor = currentCoor;
+    drawState = 'square2';
+
+  } else if (drawState == 'square2') {
+    drawState = '';
+
   } else if (drawState == 'rectangle') {
     obj.vertices[0].coor = currentCoor;
     drawState = 'rectangle2';
+
   } else if (drawState == 'rectangle2') {
     drawState = '';
-    console.log(obj.vertices[0].coor);
-    console.log(obj.vertices[1].coor);
-    console.log(obj.vertices[2].coor);
-    console.log(obj.vertices[3].coor);
-    console.log(obj.vertices[4].coor);
-    console.log(obj.vertices[5].coor);
+
   } else if (drawState == 'polygon') {
 
     let isFirstVertice = obj.vertices[0].coor[0] === 0 && obj.vertices[0].coor[1] === 0
@@ -145,7 +201,7 @@ function loadShader(gl, type, source) {
 }
 
 // UTIL --------------------------------------------------------------------------------------------
-const dist = (p1, p2) => (Math.sqrt(Math.pow(p1[0] - p2[0])) + (Math.pow(p1[1] - p2[1])))
+const dist = (p1, p2) => Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
 
 const getMouseCoor = (e) => {
   const x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
