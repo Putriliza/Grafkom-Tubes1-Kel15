@@ -12,19 +12,26 @@ class Point {
   }
 
   // TODO: dirender cuma ketika object atau vertex dihover/select
-  render = (gl, vBuffer, vPosition) => {
-    const dotVertices = [
-        [this.coor[0] - epsilon, this.coor[1] - epsilon],
-        [this.coor[0] + epsilon, this.coor[1] - epsilon],
-        [this.coor[0] + epsilon, this.coor[1] + epsilon],
-        [this.coor[0] - epsilon, this.coor[1] + epsilon],
-    ];
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(dotVertices), gl.STATIC_DRAW);
-    gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(vPosition);
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, dotVertices.length);
+  render = (gl, vBuffer, vPosition, cBuffer, vColor) => {
+    if (this.isHovered || this.isSelected) {
+      const dotVertices = [
+          [this.coor[0] - epsilon, this.coor[1] - epsilon],
+          [this.coor[0] + epsilon, this.coor[1] - epsilon],
+          [this.coor[0] + epsilon, this.coor[1] + epsilon],
+          [this.coor[0] - epsilon, this.coor[1] + epsilon],
+      ];
+      gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, flatten(dotVertices), gl.STATIC_DRAW);
+      gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(vPosition);
+      const dotColor = Array(4).fill(this.isSelected ? [1, 0, 0, 1] : [0, 0, 1, 1]);
+      gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, flatten(dotColor), gl.STATIC_DRAW);
+      gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(vColor);
+      
+      gl.drawArrays(gl.TRIANGLE_FAN, 0, dotVertices.length);
+    }
   }
 
   //other methods
@@ -34,7 +41,6 @@ class Model {
     constructor(id){
       this.id = id;
       this.vertices = [];
-      this.dotVertices = [];
 
       //other attributes
     }
@@ -44,9 +50,9 @@ class Model {
       this.vertices.push(new Point(coor, color, this.vertices.length));
     }
 
-    renderDot = (gl, vBuffer, vPosition) => {
+    renderDot = (gl, vBuffer, vPosition, cBuffer, vColor) => {
       this.vertices.forEach((v) => {
-        v.render(gl, vBuffer, vPosition);
+        v.render(gl, vBuffer, vPosition, cBuffer, vColor);
       });
     }
 }
@@ -60,21 +66,32 @@ class Line extends Model {
 
   render = (gl) => {
     const verticesCoor = [];
+    const verticesColors = [];
 
     this.vertices.forEach((v) => {
       verticesCoor.push(v.coor);
+      verticesColors.push(v.color);
     });
 
     const vBuffer = gl.createBuffer();
-
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(verticesCoor), gl.STATIC_DRAW);
+    
     const vPosition = gl.getAttribLocation(program, 'vPosition');
     gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
+
+    var cBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(verticesColors), gl.STATIC_DRAW);
+
+    const vColor = gl.getAttribLocation(program, 'vColor');
+    gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vColor);
+
     gl.drawArrays(gl.LINES, 0, verticesCoor.length);
 
-    this.renderDot(gl, vBuffer, vPosition);
+    this.renderDot(gl, vBuffer, vPosition, cBuffer, vColor)
     
   }
 }
@@ -92,11 +109,11 @@ class Square extends Model {
 
   render = (gl) => {
     const verticesCoor = [];
-    const colors = [];
+    const verticesColors = [];
 
     this.vertices.forEach((v) => {
       verticesCoor.push(v.coor);
-      colors.push(v.color);
+      verticesColors.push(v.color);
     });
 
     const vBuffer = gl.createBuffer();
@@ -110,7 +127,7 @@ class Square extends Model {
     
     var cBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(verticesColors), gl.STATIC_DRAW);
 
     const vColor = gl.getAttribLocation(program, 'vColor');
     gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
@@ -118,7 +135,7 @@ class Square extends Model {
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, verticesCoor.length);
 
-    this.renderDot(gl, vBuffer, vPosition);
+    this.renderDot(gl, vBuffer, vPosition, cBuffer, vColor)
   }
 }
 
@@ -135,11 +152,11 @@ class Rectangle extends Model {
 
   render = (gl) => {
     const verticesCoor = [];
-    const colors = [];
+    const verticesColors = [];
 
     this.vertices.forEach((v) => {
       verticesCoor.push(v.coor);
-      colors.push(v.color);
+      verticesColors.push(v.color);
     });
 
     const vBuffer = gl.createBuffer();
@@ -153,7 +170,7 @@ class Rectangle extends Model {
     
     var cBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(verticesColors), gl.STATIC_DRAW);
 
     const vColor = gl.getAttribLocation(program, 'vColor');
     gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
@@ -161,7 +178,7 @@ class Rectangle extends Model {
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, verticesCoor.length);
 
-    this.renderDot(gl, vBuffer, vPosition);
+    this.renderDot(gl, vBuffer, vPosition, cBuffer, vColor)
   }
 }
 
@@ -173,11 +190,11 @@ class Polygon extends Model {
 
   render = (gl) => {
     const verticesCoor = [];
-    const colors = [];
+    const verticesColors = [];
 
     this.vertices.forEach((v) => {
       verticesCoor.push(v.coor);
-      colors.push(v.color);
+      verticesColors.push(v.color);
     });
 
     const vBuffer = gl.createBuffer();
@@ -191,7 +208,7 @@ class Polygon extends Model {
     
     var cBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(verticesColors), gl.STATIC_DRAW);
 
     const vColor = gl.getAttribLocation(program, 'vColor');
     gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
@@ -199,6 +216,6 @@ class Polygon extends Model {
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, verticesCoor.length);
 
-    this.renderDot(gl, vBuffer, vPosition);
+    this.renderDot(gl, vBuffer, vPosition, cBuffer, vColor)
   }
 }

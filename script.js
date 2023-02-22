@@ -1,7 +1,10 @@
 const objects = [];
 let drawState = '';
-let active_object_id = null;
-let active_vertex_id = null;
+let hovered_object_id = -1;
+let hovered_vertex_id = -1;
+let selected_object_id = -1;
+let selected_vertex_id = -1;
+
 // contoh flow drawState line : '' -> 'Line' -> 'Line2' -> ''
 
 const canvas = document.getElementById('canvas');
@@ -10,7 +13,6 @@ const drawStatus = document.getElementById('draw-status');
 const activeCoor = document.getElementById('active-coor');
 const activeObject = document.getElementById('active-object');
 const activeVertex = document.getElementById('active-vertex');
-const selected = document.getElementById('selected');
 
 
 drawButtons.forEach((button) => {
@@ -39,16 +41,19 @@ const drawAction = (model) => {
 
 canvas.addEventListener('mousemove', (e) => {
   currentCoor = getMouseCoor(e);
-  let obj = objects[objects.length - 1];
+  let lastObj = objects[objects.length - 1];
 
   getActiveObject(currentCoor);
   
-
-  if (drawState == 'line2') {
-    obj.vertices[1].setCoor(currentCoor);
+  if (drawState == 'drag' || drawState == 'drag2') {
+    drawState = 'drag2';
+    objects[selected_object_id].vertices[selected_vertex_id].setCoor(currentCoor);
+    drawStatus.innerHTML = `Dragging object ${selected_object_id} vertex ${selected_vertex_id} ...`;
+  } else if (drawState == 'line2') {
+    lastObj.vertices[1].setCoor(currentCoor);
   } else if (drawState == 'square2') {
-    startPointX = obj.vertices[0].coor[0];
-    startPointY = obj.vertices[0].coor[1];
+    startPointX = lastObj.vertices[0].coor[0];
+    startPointY = lastObj.vertices[0].coor[1];
     endPointX = currentCoor[0];
     endPointY = currentCoor[1];
 
@@ -57,37 +62,37 @@ canvas.addEventListener('mousemove', (e) => {
     if ( startPointX < endPointX ) {
 
       if ( startPointY < endPointY) { // Kuadran 1
-        obj.vertices[1].setCoor([startPointX, startPointY + squareSide])
-        obj.vertices[2].setCoor([startPointX + squareSide, startPointY])
-        obj.vertices[3].setCoor([startPointX + squareSide, startPointY])
-        obj.vertices[4].setCoor([startPointX + squareSide, startPointY + squareSide])
-        obj.vertices[5].setCoor([startPointX, startPointY + squareSide])
+        lastObj.vertices[1].setCoor([startPointX, startPointY + squareSide])
+        lastObj.vertices[2].setCoor([startPointX + squareSide, startPointY])
+        lastObj.vertices[3].setCoor([startPointX + squareSide, startPointY])
+        lastObj.vertices[4].setCoor([startPointX + squareSide, startPointY + squareSide])
+        lastObj.vertices[5].setCoor([startPointX, startPointY + squareSide])
 
       } else { // Kuadran 4
-        obj.vertices[1].setCoor([startPointX, startPointY - squareSide])
-        obj.vertices[2].setCoor([startPointX + squareSide, startPointY])
-        obj.vertices[3].setCoor([startPointX + squareSide, startPointY])
-        obj.vertices[4].setCoor([startPointX + squareSide, startPointY - squareSide])
-        obj.vertices[5].setCoor([startPointX, startPointY - squareSide])
+        lastObj.vertices[1].setCoor([startPointX, startPointY - squareSide])
+        lastObj.vertices[2].setCoor([startPointX + squareSide, startPointY])
+        lastObj.vertices[3].setCoor([startPointX + squareSide, startPointY])
+        lastObj.vertices[4].setCoor([startPointX + squareSide, startPointY - squareSide])
+        lastObj.vertices[5].setCoor([startPointX, startPointY - squareSide])
 
       }
-      // console.log([obj.vertices[0].coor, obj.vertices[1].coor, obj.vertices[2].coor, obj.vertices[3].coor, obj.vertices[4].coor, obj.vertices[5].coor]))
+      // console.log([lastObj.vertices[0].coor, lastObj.vertices[1].coor, lastObj.vertices[2].coor, lastObj.vertices[3].coor, lastObj.vertices[4].coor, lastObj.vertices[5].coor]))
 
     } else {
 
       if ( startPointY < endPointY) { // Kuadran 2
-        obj.vertices[1].setCoor([startPointX, startPointY + squareSide])
-        obj.vertices[2].setCoor([startPointX - squareSide, startPointY])
-        obj.vertices[3].setCoor([startPointX - squareSide, startPointY])
-        obj.vertices[4].setCoor([startPointX - squareSide, startPointY + squareSide])
-        obj.vertices[5].setCoor([startPointX, startPointY + squareSide])
+        lastObj.vertices[1].setCoor([startPointX, startPointY + squareSide])
+        lastObj.vertices[2].setCoor([startPointX - squareSide, startPointY])
+        lastObj.vertices[3].setCoor([startPointX - squareSide, startPointY])
+        lastObj.vertices[4].setCoor([startPointX - squareSide, startPointY + squareSide])
+        lastObj.vertices[5].setCoor([startPointX, startPointY + squareSide])
 
       } else { // Kuadran 3
-        obj.vertices[1].setCoor([startPointX, startPointY - squareSide])
-        obj.vertices[2].setCoor([startPointX - squareSide, startPointY])
-        obj.vertices[3].setCoor([startPointX - squareSide, startPointY])
-        obj.vertices[4].setCoor([startPointX - squareSide, startPointY - squareSide])
-        obj.vertices[5].setCoor([startPointX, startPointY - squareSide])
+        lastObj.vertices[1].setCoor([startPointX, startPointY - squareSide])
+        lastObj.vertices[2].setCoor([startPointX - squareSide, startPointY])
+        lastObj.vertices[3].setCoor([startPointX - squareSide, startPointY])
+        lastObj.vertices[4].setCoor([startPointX - squareSide, startPointY - squareSide])
+        lastObj.vertices[5].setCoor([startPointX, startPointY - squareSide])
 
       }
 
@@ -95,16 +100,93 @@ canvas.addEventListener('mousemove', (e) => {
     
     
   } else if (drawState == 'rectangle2') {
-    startPointX = obj.vertices[0].coor[0];
-    startPointY = obj.vertices[0].coor[1];
+    startPointX = lastObj.vertices[0].coor[0];
+    startPointY = lastObj.vertices[0].coor[1];
     endPointX = currentCoor[0];
     endPointY = currentCoor[1];
 
-    obj.vertices[1].setCoor([startPointX, endPointY])
-    obj.vertices[2].setCoor([endPointX, startPointY])
-    obj.vertices[3].setCoor([endPointX, startPointY])
-    obj.vertices[4].setCoor(currentCoor)
-    obj.vertices[5].setCoor([startPointX, endPointY])
+    lastObj.vertices[1].setCoor([startPointX, endPointY])
+    lastObj.vertices[2].setCoor([endPointX, startPointY])
+    lastObj.vertices[3].setCoor([endPointX, startPointY])
+    lastObj.vertices[4].setCoor(currentCoor)
+    lastObj.vertices[5].setCoor([startPointX, endPointY])
+  }
+});
+
+
+canvas.addEventListener('mouseup', (e) => {
+  currentCoor = getMouseCoor(e);
+  let lastObj = objects[objects.length - 1];
+  if (drawState == '') {
+    if (hovered_object_id != -1 && hovered_vertex_id != -1) {
+      if (dist(currentCoor, objects[hovered_object_id].vertices[hovered_vertex_id].coor) < epsilon) {
+        let clickedVertex = objects[hovered_object_id].vertices[hovered_vertex_id]
+        clickedVertex.isSelected = !clickedVertex.isSelected;
+        selected_object_id = hovered_object_id;
+        selected_vertex_id = hovered_vertex_id;
+        drawState = 'drag';
+
+        if (clickedVertex.isSelected) {
+          objects.forEach((obj) => {
+            obj.vertices.forEach((vertex) => {
+              if (vertex != clickedVertex) {
+                vertex.isSelected = false;
+              }
+            })
+          })
+        }
+      }
+    } else {
+      objects.forEach((obj) => {
+        obj.vertices.forEach((vertex) => {
+          vertex.isSelected = false;
+        })
+      })
+    }
+  } else if (drawState == 'drag2') {
+    drawState = '';
+    drawStatus.innerHTML = '...';
+  } else if (drawState == 'line') {
+    drawState = 'line2';
+    lastObj.vertices[0].setCoor(currentCoor)
+    lastObj.vertices[1].setCoor(currentCoor)
+
+  } else if (drawState == 'line2') {
+    drawState = '';
+    drawStatus.innerHTML = '...';
+
+  } else if (drawState == 'square') {
+    lastObj.vertices[0].setCoor(currentCoor);
+    drawState = 'square2';
+
+  } else if (drawState == 'square2') {
+    drawState = '';
+    drawStatus.innerHTML = '...';
+
+  } else if (drawState == 'rectangle') {
+    lastObj.vertices[0].setCoor(currentCoor);
+    drawState = 'rectangle2';
+
+  } else if (drawState == 'rectangle2') {
+    drawState = '';
+    drawStatus.innerHTML = '...';
+  } else if (drawState == 'polygon') {
+
+    let isFirstVertice = lastObj.vertices[0].coor[0] === 0 && lastObj.vertices[0].coor[1] === 0
+
+    if (isFirstVertice){
+      lastObj.vertices[0].setCoor(currentCoor);
+    } else{
+      lastObj.addVertex(currentCoor, [0, 0, 0, 1]);
+    }
+    
+  }
+});
+
+canvas.addEventListener('dblclick', (e) => {
+  if (drawState == 'polygon') {
+    drawState = '';
+    drawStatus.innerHTML = '...';
   }
 });
 
@@ -113,90 +195,47 @@ const getActiveObject = (currentCoor) => {
   objects.forEach((obj) => {
     obj.vertices.forEach((vertex) => {
       if (dist(vertex.coor, currentCoor) < epsilon) {
-        if (active_object_id == null) {
-          active_object_id = obj.id;
-          active_vertex_id = vertex.id;
-          activeObject.innerHTML = `Active object : ${active_object_id}`;
+        if (hovered_object_id == -1) {
+          hovered_object_id = obj.id;
+          hovered_vertex_id = vertex.id;
+          activeObject.innerHTML = `Active object : ${hovered_object_id}`;
           activeVertex.innerHTML = `Active vertex : [${vertex.coor}]`;
-          isExist = true;
-        } else if (active_object_id == obj.id) {
+          vertex.isHovered = true;
+
+        } else if (hovered_object_id == obj.id) {
           
         } else {
-          // Compare distance, choose the closest vertex
-          let oldVertex = objects[active_object_id].vertices[active_vertex_id];
+          let oldVertex = objects[hovered_object_id].vertices[hovered_vertex_id];
           if (dist(vertex.coor, currentCoor) < dist(oldVertex.coor, currentCoor)) {
-            oldVertex.isSelected = false
-            active_object_id = obj.id;
-            active_vertex_id = vertex.id;
-            activeObject.innerHTML = `Active object : ${active_object_id}`;
+            hovered_object_id = obj.id;
+            hovered_vertex_id = vertex.id;
+            activeObject.innerHTML = `Active object : ${hovered_object_id}`;
             activeVertex.innerHTML = `Active vertex : [${vertex.coor}]`;
-            isExist = true;
+            vertex.isHovered = true;
+            oldVertex.isHovered = false;
           } else {
 
           }
         }
+        isExist = true;
       }
     });
   });
   if (!isExist) {
-    active_object_id = null;
-    active_vertex_id = null;
-    activeObject.innerHTML = `Active object : ${active_object_id}`;
-    activeVertex.innerHTML = `Active vertex : ${active_vertex_id}`;
+    hovered_object_id = -1;
+    hovered_vertex_id = -1;
+    activeObject.innerHTML = `Active object : ${hovered_object_id}`;
+    activeVertex.innerHTML = `Active vertex : ${hovered_vertex_id}`;
+
+    objects.forEach((obj) => {
+      obj.vertices.forEach((vertex) => {
+        vertex.isHovered = false;
+      });
+    });
   }
 };
 
-
-canvas.addEventListener('mouseup', (e) => {
-  currentCoor = getMouseCoor(e);
-
-  let obj = objects[objects.length - 1];
-
-  if (drawState == 'line') {
-    drawState = 'line2';
-    obj.vertices[0].setCoor(currentCoor)
-    obj.vertices[1].setCoor(currentCoor)
-
-  } else if (drawState == 'line2') {
-    drawState = '';
-    drawStatus.innerHTML = '...';
-
-  } else if (drawState == 'square') {
-    obj.vertices[0].setCoor(currentCoor);
-    drawState = 'square2';
-
-  } else if (drawState == 'square2') {
-    drawState = '';
-    drawStatus.innerHTML = '...';
-
-  } else if (drawState == 'rectangle') {
-    obj.vertices[0].setCoor(currentCoor);
-    drawState = 'rectangle2';
-
-  } else if (drawState == 'rectangle2') {
-    drawState = '';
-    drawStatus.innerHTML = '...';
-  } else if (drawState == 'polygon') {
-
-    let isFirstVertice = obj.vertices[0].coor[0] === 0 && obj.vertices[0].coor[1] === 0
-
-    if (isFirstVertice){
-      obj.vertices[0].setCoor(currentCoor);
-    } else{
-      obj.addVertex(currentCoor, [0, 0, 0, 1]);
-    }
-    
-  }
-});
-
-
 console.log(objects);
-canvas.addEventListener('dblclick', (e) => {
-  if (drawState == 'polygon') {
-    drawState = '';
-    drawStatus.innerHTML = '...';
-  }
-});
 
 // GL ----------------------------------------------------------------------------------------------
 const gl = canvas.getContext('webgl') ?? canvas.getContext('experimental-webgl');
