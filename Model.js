@@ -1,10 +1,11 @@
 class Point {
-  constructor(coor, color, id=-1){
+  constructor(coor, color, id=-1, isCentroid=false) {
       this.id = id;
       this.coor = coor;
       this.color = color;
       this.isSelected = false;
       this.isHovered = false;
+      this.isCentroid = isCentroid;
   }
 
   setCoor = (coor) => {
@@ -24,7 +25,7 @@ class Point {
       gl.bufferData(gl.ARRAY_BUFFER, flatten(dotVertices), gl.STATIC_DRAW);
       gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
       gl.enableVertexAttribArray(vPosition);
-      const dotColor = Array(4).fill(this.isSelected ? [1, 0, 0, 1] : [0, 0, 1, 1]);
+      const dotColor = Array(4).fill(this.isSelected ? [1, 0, 0, 1] : (this.isCentroid ? [1, 1, 1, 1] : [0, 0, 1, 1]))
       gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
       gl.bufferData(gl.ARRAY_BUFFER, flatten(dotColor), gl.STATIC_DRAW);
       gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
@@ -41,28 +42,75 @@ class Model {
     constructor(id){
       this.id = id;
       this.vertices = [];
+      this.centroid = new Point([0,0], [0, 0, 0, 1], 99, true);
 
-      //other attributes
+      // Model isSelected or isHovered based on the centroid
     }
 
-    //other methods  
+    getModelName = () => {
+      return this.constructor.name;
+    }
+
     addVertex = (coor, color) => {
       this.vertices.push(new Point(coor, color, this.vertices.length));
+      this.setCentroid();
     }
+
+    moveVertex = (id, coor) => {
+      this.vertices[id].setCoor(coor);
+      this.setCentroid();
+    }
+
+    setCentroid = () => {
+      // search for the largest and smallest x and y
+      
+      let minX = Math.min(...this.vertices.map((v) => v.coor[0]));
+      let minY = Math.min(...this.vertices.map((v) => v.coor[1]));
+      let maxX = Math.max(...this.vertices.map((v) => v.coor[0]));
+      let maxY = Math.max(...this.vertices.map((v) => v.coor[1]));
+
+      this.centroid.coor = [(minX + maxX) / 2, (minY + maxY) / 2];
+    }
+
+    // translate = (dx, dy) => {
+    //   this.vertices.forEach((v) => {
+    //     v.coor[0] += dx;
+    //     v.coor[1] += dy;
+    //   });
+    //   this.centroid.coor[0] += dx;
+    //   this.centroid.coor[1] += dy;
+    // }
 
     renderDot = (gl, vBuffer, vPosition, cBuffer, vColor) => {
       this.vertices.forEach((v) => {
         v.render(gl, vBuffer, vPosition, cBuffer, vColor);
       });
+      this.centroid.render(gl, vBuffer, vPosition, cBuffer, vColor);
     }
 }
   
 class Line extends Model {
-  constructor(id){
+  constructor(id) {
     super(id);
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 0));
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 1));
   }
+
+  getLength = () => {
+    return dist(this.vertices[0].coor, this.vertices[1].coor)
+  }
+
+  // setLength = (length) => {
+  //   const dx = this.vertices[1].coor[0] - this.vertices[0].coor[0];
+  //   const dy = this.vertices[1].coor[1] - this.vertices[0].coor[1];
+  //   const angle = Math.atan2(dy, dx);
+  //   const newCoor = [
+  //     this.vertices[0].coor[0] + length * Math.cos(angle),
+  //     this.vertices[0].coor[1] + length * Math.sin(angle)
+  //   ];
+  //   this.vertices[1].setCoor(newCoor);
+  // }
+
 
   render = (gl) => {
     const verticesCoor = [];
@@ -92,7 +140,6 @@ class Line extends Model {
     gl.drawArrays(gl.LINES, 0, verticesCoor.length);
 
     this.renderDot(gl, vBuffer, vPosition, cBuffer, vColor)
-    
   }
 }
 

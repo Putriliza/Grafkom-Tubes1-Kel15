@@ -22,12 +22,27 @@
         <div>
           <p id="draw-status"></p>
         </div>
-        <div>
-          <p id="active-coor">Current Coordinates: </p>
+        <div> <!-- Can be removed later -->
+          <p id="current-coor">Current Coordinates: </p>
         </div>
-        <div>
-          <p id="active-object">Active Object: </p>
-          <p id="active-vertex">Active Vertex: </p>
+        <div id="special-methods">
+          <div id="special-method-line" style="display: none;">
+            <h3>Line Method</h3>
+              <input type="range" min="-1" max="1" step=0.001 value="0" id="line-length-slider" />
+          </div>
+          <div id="special-method-square" style="display: none;">
+            <h3>Square Method</h3>
+          </div>
+          <div id="special-method-rectangle" style="display: none;">
+            <h3>Rectangle Method</h3>
+          </div>
+          <div id="special-method-polygon" style="display: none;">
+            <h3>Polygon Method</h3>
+          </div>
+        </div>
+        <div id="general-methods">
+          <h3>General Methods</h3>
+          <!-- translation dll -->
         </div>
       </div>
       
