@@ -3,8 +3,28 @@ class Point {
       this.id = id;
       this.coor = coor;
       this.color = color;
+      this.isSelected = false;
+      this.isHovered = false;
+  }
 
-      //other attributes
+  setCoor = (coor) => {
+    this.coor = coor;
+  }
+
+  // TODO: dirender cuma ketika object atau vertex dihover/select
+  render = (gl, vBuffer, vPosition) => {
+    const dotVertices = [
+        [this.coor[0] - epsilon, this.coor[1] - epsilon],
+        [this.coor[0] + epsilon, this.coor[1] - epsilon],
+        [this.coor[0] + epsilon, this.coor[1] + epsilon],
+        [this.coor[0] - epsilon, this.coor[1] + epsilon],
+    ];
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(dotVertices), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vPosition);
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, dotVertices.length);
   }
 
   //other methods
@@ -14,15 +34,22 @@ class Model {
     constructor(id){
       this.id = id;
       this.vertices = [];
+      this.dotVertices = [];
 
       //other attributes
     }
 
     //other methods  
     addVertex = (coor, color) => {
-      this.vertices.push(new Point(coor, color, this.vertices.length))
+      this.vertices.push(new Point(coor, color, this.vertices.length));
     }
-  }
+
+    renderDot = (gl, vBuffer, vPosition) => {
+      this.vertices.forEach((v) => {
+        v.render(gl, vBuffer, vPosition);
+      });
+    }
+}
   
 class Line extends Model {
   constructor(id){
@@ -46,6 +73,9 @@ class Line extends Model {
     gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
     gl.drawArrays(gl.LINES, 0, verticesCoor.length);
+
+    this.renderDot(gl, vBuffer, vPosition);
+    
   }
 }
 
@@ -87,6 +117,8 @@ class Square extends Model {
     gl.enableVertexAttribArray(vColor);
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, verticesCoor.length);
+
+    this.renderDot(gl, vBuffer, vPosition);
   }
 }
 
@@ -128,6 +160,8 @@ class Rectangle extends Model {
     gl.enableVertexAttribArray(vColor);
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, verticesCoor.length);
+
+    this.renderDot(gl, vBuffer, vPosition);
   }
 }
 
@@ -164,5 +198,7 @@ class Polygon extends Model {
     gl.enableVertexAttribArray(vColor);
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, verticesCoor.length);
+
+    this.renderDot(gl, vBuffer, vPosition);
   }
 }

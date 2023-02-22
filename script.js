@@ -1,10 +1,17 @@
 const objects = [];
 let drawState = '';
+let active_object_id = null;
+let active_vertex_id = null;
 // contoh flow drawState line : '' -> 'Line' -> 'Line2' -> ''
 
 const canvas = document.getElementById('canvas');
 const drawButtons = document.querySelectorAll('.draw-button');
 const drawStatus = document.getElementById('draw-status');
+const activeCoor = document.getElementById('active-coor');
+const activeObject = document.getElementById('active-object');
+const activeVertex = document.getElementById('active-vertex');
+const selected = document.getElementById('selected');
+
 
 drawButtons.forEach((button) => {
   button.addEventListener('click', (e) => {
@@ -34,8 +41,11 @@ canvas.addEventListener('mousemove', (e) => {
   currentCoor = getMouseCoor(e);
   let obj = objects[objects.length - 1];
 
+  getActiveObject(currentCoor);
+  
+
   if (drawState == 'line2') {
-    obj.vertices[obj.vertices.length - 1].coor = currentCoor;
+    obj.vertices[1].setCoor(currentCoor);
   } else if (drawState == 'square2') {
     startPointX = obj.vertices[0].coor[0];
     startPointY = obj.vertices[0].coor[1];
@@ -47,37 +57,37 @@ canvas.addEventListener('mousemove', (e) => {
     if ( startPointX < endPointX ) {
 
       if ( startPointY < endPointY) { // Kuadran 1
-        obj.vertices[1].coor = [startPointX, startPointY + squareSide];
-        obj.vertices[2].coor = [startPointX + squareSide, startPointY];
-        obj.vertices[3].coor = [startPointX + squareSide, startPointY];
-        obj.vertices[4].coor = [startPointX + squareSide, startPointY + squareSide];
-        obj.vertices[5].coor = [startPointX, startPointY + squareSide];
+        obj.vertices[1].setCoor([startPointX, startPointY + squareSide])
+        obj.vertices[2].setCoor([startPointX + squareSide, startPointY])
+        obj.vertices[3].setCoor([startPointX + squareSide, startPointY])
+        obj.vertices[4].setCoor([startPointX + squareSide, startPointY + squareSide])
+        obj.vertices[5].setCoor([startPointX, startPointY + squareSide])
 
       } else { // Kuadran 4
-        obj.vertices[1].coor = [startPointX, startPointY - squareSide];
-        obj.vertices[2].coor = [startPointX + squareSide, startPointY];
-        obj.vertices[3].coor = [startPointX + squareSide, startPointY];
-        obj.vertices[4].coor = [startPointX + squareSide, startPointY - squareSide];
-        obj.vertices[5].coor = [startPointX, startPointY - squareSide];
+        obj.vertices[1].setCoor([startPointX, startPointY - squareSide])
+        obj.vertices[2].setCoor([startPointX + squareSide, startPointY])
+        obj.vertices[3].setCoor([startPointX + squareSide, startPointY])
+        obj.vertices[4].setCoor([startPointX + squareSide, startPointY - squareSide])
+        obj.vertices[5].setCoor([startPointX, startPointY - squareSide])
 
       }
-      // console.log([obj.vertices[0].coor, obj.vertices[1].coor, obj.vertices[2].coor, obj.vertices[3].coor, obj.vertices[4].coor, obj.vertices[5].coor]);
+      // console.log([obj.vertices[0].coor, obj.vertices[1].coor, obj.vertices[2].coor, obj.vertices[3].coor, obj.vertices[4].coor, obj.vertices[5].coor]))
 
     } else {
 
       if ( startPointY < endPointY) { // Kuadran 2
-        obj.vertices[1].coor = [startPointX, startPointY + squareSide];
-        obj.vertices[2].coor = [startPointX - squareSide, startPointY];
-        obj.vertices[3].coor = [startPointX - squareSide, startPointY];
-        obj.vertices[4].coor = [startPointX - squareSide, startPointY + squareSide];
-        obj.vertices[5].coor = [startPointX, startPointY + squareSide];
+        obj.vertices[1].setCoor([startPointX, startPointY + squareSide])
+        obj.vertices[2].setCoor([startPointX - squareSide, startPointY])
+        obj.vertices[3].setCoor([startPointX - squareSide, startPointY])
+        obj.vertices[4].setCoor([startPointX - squareSide, startPointY + squareSide])
+        obj.vertices[5].setCoor([startPointX, startPointY + squareSide])
 
       } else { // Kuadran 3
-        obj.vertices[1].coor = [startPointX, startPointY - squareSide];
-        obj.vertices[2].coor = [startPointX - squareSide, startPointY];
-        obj.vertices[3].coor = [startPointX - squareSide, startPointY];
-        obj.vertices[4].coor = [startPointX - squareSide, startPointY - squareSide];
-        obj.vertices[5].coor = [startPointX, startPointY - squareSide];
+        obj.vertices[1].setCoor([startPointX, startPointY - squareSide])
+        obj.vertices[2].setCoor([startPointX - squareSide, startPointY])
+        obj.vertices[3].setCoor([startPointX - squareSide, startPointY])
+        obj.vertices[4].setCoor([startPointX - squareSide, startPointY - squareSide])
+        obj.vertices[5].setCoor([startPointX, startPointY - squareSide])
 
       }
 
@@ -90,29 +100,69 @@ canvas.addEventListener('mousemove', (e) => {
     endPointX = currentCoor[0];
     endPointY = currentCoor[1];
 
-    obj.vertices[1].coor = [startPointX, endPointY];
-    obj.vertices[2].coor = [endPointX, startPointY];
-    obj.vertices[3].coor = [endPointX, startPointY];
-    obj.vertices[4].coor = currentCoor;
-    obj.vertices[5].coor = [startPointX, endPointY];
+    obj.vertices[1].setCoor([startPointX, endPointY])
+    obj.vertices[2].setCoor([endPointX, startPointY])
+    obj.vertices[3].setCoor([endPointX, startPointY])
+    obj.vertices[4].setCoor(currentCoor)
+    obj.vertices[5].setCoor([startPointX, endPointY])
   }
 });
 
+const getActiveObject = (currentCoor) => {
+  let isExist = false;
+  objects.forEach((obj) => {
+    obj.vertices.forEach((vertex) => {
+      if (dist(vertex.coor, currentCoor) < epsilon) {
+        if (active_object_id == null) {
+          active_object_id = obj.id;
+          active_vertex_id = vertex.id;
+          activeObject.innerHTML = `Active object : ${active_object_id}`;
+          activeVertex.innerHTML = `Active vertex : [${vertex.coor}]`;
+          isExist = true;
+        } else if (active_object_id == obj.id) {
+          
+        } else {
+          // Compare distance, choose the closest vertex
+          let oldVertex = objects[active_object_id].vertices[active_vertex_id];
+          if (dist(vertex.coor, currentCoor) < dist(oldVertex.coor, currentCoor)) {
+            oldVertex.isSelected = false
+            active_object_id = obj.id;
+            active_vertex_id = vertex.id;
+            activeObject.innerHTML = `Active object : ${active_object_id}`;
+            activeVertex.innerHTML = `Active vertex : [${vertex.coor}]`;
+            isExist = true;
+          } else {
+
+          }
+        }
+      }
+    });
+  });
+  if (!isExist) {
+    active_object_id = null;
+    active_vertex_id = null;
+    activeObject.innerHTML = `Active object : ${active_object_id}`;
+    activeVertex.innerHTML = `Active vertex : ${active_vertex_id}`;
+  }
+};
+
+
 canvas.addEventListener('mouseup', (e) => {
   currentCoor = getMouseCoor(e);
+
   let obj = objects[objects.length - 1];
 
   if (drawState == 'line') {
     drawState = 'line2';
-    obj.vertices[0].coor = currentCoor;
-    obj.vertices[1].coor = currentCoor;
+    obj.vertices[0].setCoor(currentCoor)
+    obj.vertices[1].setCoor(currentCoor)
 
   } else if (drawState == 'line2') {
     drawState = '';
     drawStatus.innerHTML = '...';
 
   } else if (drawState == 'square') {
-    obj.vertices[0].coor = currentCoor;
+    obj.vertices[0].setCoor(currentCoor);
     drawState = 'square2';
 
   } else if (drawState == 'square2') {
@@ -120,7 +170,7 @@ canvas.addEventListener('mouseup', (e) => {
     drawStatus.innerHTML = '...';
 
   } else if (drawState == 'rectangle') {
-    obj.vertices[0].coor = currentCoor;
+    obj.vertices[0].setCoor(currentCoor);
     drawState = 'rectangle2';
 
   } else if (drawState == 'rectangle2') {
@@ -131,7 +181,7 @@ canvas.addEventListener('mouseup', (e) => {
     let isFirstVertice = obj.vertices[0].coor[0] === 0 && obj.vertices[0].coor[1] === 0
 
     if (isFirstVertice){
-      obj.vertices[0].coor = currentCoor;
+      obj.vertices[0].setCoor(currentCoor);
     } else{
       obj.addVertex(currentCoor, [0, 0, 0, 1]);
     }
@@ -139,13 +189,14 @@ canvas.addEventListener('mouseup', (e) => {
   }
 });
 
+
+console.log(objects);
 canvas.addEventListener('dblclick', (e) => {
   if (drawState == 'polygon') {
     drawState = '';
     drawStatus.innerHTML = '...';
   }
 });
-
 
 // GL ----------------------------------------------------------------------------------------------
 const gl = canvas.getContext('webgl') ?? canvas.getContext('experimental-webgl');
@@ -211,19 +262,23 @@ const dist = (p1, p2) => Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] -
 const getMouseCoor = (e) => {
   const x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
   const y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+  activeCoor.innerHTML = `Current Coordinates: [${x}, ${y}]`;
   return [x, y];
 };
 
 function flatten(v) {
-    let n = v.length * v[0].length;
-    const floats = new Float32Array(n);
-  
-    let i = 0;
-    v.forEach((row) => {
-      row.forEach((col) => {
-        floats[i++] = col;
-      });
+  let n = v.length * v[0].length;
+  const floats = new Float32Array(n);
+
+  let i = 0;
+  v.forEach((row) => {
+    row.forEach((col) => {
+      floats[i++] = col;
     });
-    
-    return floats;
-  }
+  });
+  
+  return floats;
+}
+
+const epsilon = 0.02;
+
