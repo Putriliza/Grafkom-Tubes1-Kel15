@@ -4,7 +4,7 @@ let drawState = '';
 
 const canvas = document.getElementById('canvas');
 const drawButtons = document.querySelectorAll('.draw-button');
-console.log(drawButtons);
+const drawStatus = document.getElementById('draw-status');
 
 drawButtons.forEach((button) => {
   button.addEventListener('click', (e) => {
@@ -14,6 +14,7 @@ drawButtons.forEach((button) => {
 
 const drawAction = (model) => {
   if (drawState == '') {
+    drawStatus.innerHTML = `Drawing ${model} ...`;
     drawState = model;
     if (model == 'line') {
       objects.push(new Line(objects.length));
@@ -24,14 +25,10 @@ const drawAction = (model) => {
     } else if (model == 'polygon') {
       objects.push(new Polygon(objects.length));
     }
-  } 
-};
-
-const endDraw = (model) =>{
-  if (drawState == 'polygon'){
-    drawState = ''
+  } else {
+    drawStatus.innerHTML = 'Please finish drawing the previous object';
   }
-}
+};
 
 canvas.addEventListener('mousemove', (e) => {
   currentCoor = getMouseCoor(e);
@@ -39,7 +36,6 @@ canvas.addEventListener('mousemove', (e) => {
 
   if (drawState == 'line2') {
     obj.vertices[obj.vertices.length - 1].coor = currentCoor;
-
   } else if (drawState == 'square2') {
     startPointX = obj.vertices[0].coor[0];
     startPointY = obj.vertices[0].coor[1];
@@ -113,6 +109,7 @@ canvas.addEventListener('mouseup', (e) => {
 
   } else if (drawState == 'line2') {
     drawState = '';
+    drawStatus.innerHTML = '...';
 
   } else if (drawState == 'square') {
     obj.vertices[0].coor = currentCoor;
@@ -120,6 +117,7 @@ canvas.addEventListener('mouseup', (e) => {
 
   } else if (drawState == 'square2') {
     drawState = '';
+    drawStatus.innerHTML = '...';
 
   } else if (drawState == 'rectangle') {
     obj.vertices[0].coor = currentCoor;
@@ -127,7 +125,7 @@ canvas.addEventListener('mouseup', (e) => {
 
   } else if (drawState == 'rectangle2') {
     drawState = '';
-
+    drawStatus.innerHTML = '...';
   } else if (drawState == 'polygon') {
 
     let isFirstVertice = obj.vertices[0].coor[0] === 0 && obj.vertices[0].coor[1] === 0
@@ -138,6 +136,13 @@ canvas.addEventListener('mouseup', (e) => {
       obj.addVertex(currentCoor, [0, 0, 0, 1]);
     }
     
+  }
+});
+
+canvas.addEventListener('dblclick', (e) => {
+  if (drawState == 'polygon') {
+    drawState = '';
+    drawStatus.innerHTML = '...';
   }
 });
 

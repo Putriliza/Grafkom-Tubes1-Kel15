@@ -12,12 +12,16 @@
   <body>
     <div id="container" class="container">
       <div id="property-bar">
-        <h3>Draw New Object</h3>
-        <button class="draw-button" id="line">Line</button>
-        <button class="draw-button" id="square">Square</button>
-        <button class="draw-button" id="rectangle">Rectangle</button>
-        <button class="draw-button" id="polygon">Polygon</button>
-        <button id="end-polygon-button" onclick="endDraw(id)">End Polygon</button>
+        <div>
+          <h3>Draw New Object</h3>
+          <button class="draw-button" id="line">Line</button>
+          <button class="draw-button" id="square">Square</button>
+          <button class="draw-button" id="rectangle">Rectangle</button>
+          <button class="draw-button" id="polygon">Polygon</button>
+        </div>
+        <div>
+          <p id="draw-status">aa</p>
+        </div>
       </div>
       
       <div class="base-canvas">
