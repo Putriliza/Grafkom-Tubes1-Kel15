@@ -6,6 +6,11 @@ let selected_object_id = -1;
 let selected_vertex_id = -1;
 let currentCoor = [0, 0];
 
+console.log(hovered_object_id)
+console.log(hovered_vertex_id)
+console.log(selected_object_id)
+console.log(selected_vertex_id)
+
 // contoh flow drawState line : '' -> 'Line' -> 'Line2' -> ''
 
 const canvas = document.getElementById('canvas');
@@ -71,12 +76,20 @@ canvas.addEventListener('mousemove', (e) => {
   let lastObj = objects[objects.length - 1];
 
   getActiveObject(currentCoor);
-  
+
+  // MODIFY OBJECT
   if (drawState == 'drag' || drawState == 'drag2') {
     drawState = 'drag2';
     objects[selected_object_id].moveVertex(selected_vertex_id, currentCoor);
     draw_status.innerHTML = `Dragging object ${selected_object_id} vertex ${selected_vertex_id} ...`;
-  } else if (drawState == 'line2') {
+  } else if (drawState == 'translation') {
+    objects[selected_object_id].translation(currentCoor);
+    draw_status.innerHTML = `Translation object ${selected_object_id} ...`;
+  }
+  
+  
+  // DRAW NEW OBJECT
+  else if (drawState == 'line2') {
     lastObj.moveVertex(1, currentCoor);
   } else if (drawState == 'square2') {
     startPointX = lastObj.vertices[0].coor[0];
@@ -149,6 +162,9 @@ canvas.addEventListener('dblclick', (e) => {
   if (drawState == 'polygon') {
     drawState = '';
     draw_status.innerHTML = '...';
+  } else if (drawState == 'translation') {
+    drawState = '';
+    draw_status.innerHTML = '...';
   }
 });
 
@@ -156,27 +172,52 @@ canvas.addEventListener('mouseup', (e) => {
   currentCoor = getMouseCoor(e);
   let lastObj = objects[objects.length - 1];
   if (drawState == '') {
-    if (hovered_object_id != -1 && hovered_vertex_id != -1) {
-      if (dist(currentCoor, objects[hovered_object_id].vertices[hovered_vertex_id].coor) < epsilon) {
-        let clickedObject = objects[hovered_object_id];
-        let clickedVertex = clickedObject.vertices[hovered_vertex_id]
-        clickedObject.isSelected = !clickedObject.isSelected;
-        clickedVertex.isSelected = !clickedVertex.isSelected;
-        selected_object_id = hovered_object_id;
-        selected_vertex_id = hovered_vertex_id;
+    if (hovered_object_id != -1) {
+      if (hovered_vertex_id != -1) {
+      // SELECT VERTEX
+        if (dist(currentCoor, objects[hovered_object_id].vertices[hovered_vertex_id].coor) < epsilon) {
+          let clickedObject = objects[hovered_object_id];
+          let clickedVertex = clickedObject.vertices[hovered_vertex_id]
+          clickedVertex.isSelected = !clickedVertex.isSelected;
+          selected_object_id = hovered_object_id;
+          selected_vertex_id = hovered_vertex_id;
 
-        drawState = 'drag';
+          if (clickedVertex.isSelected) {
+            drawState = 'drag';
 
-        if (clickedVertex.isSelected) {
-          objects.forEach((obj) => {
-            obj.vertices.forEach((vertex) => {
-              if (vertex != clickedVertex) {
-                vertex.isSelected = false
-                obj.centroid.isSelected = false;
-              }
+            objects.forEach((obj) => {
+              obj.vertices.forEach((vertex) => {
+                if (vertex != clickedVertex) {
+                  vertex.isSelected = false
+                }
+              })
+              obj.centroid.isSelected = false;
             })
-          })
+          }
+          return;
         }
+      }
+
+      // SELECT CENTROID
+      if ((dist(currentCoor, objects[hovered_object_id].centroid.coor) < epsilon) ||
+          (dist(currentCoor, objects[selected_object_id].centroid.coor) < epsilon)) {
+        console.log('centroid')
+        let clickedObject = objects[hovered_object_id];
+        clickedObject.centroid.isSelected = !clickedObject.centroid.isSelected;
+        selected_object_id = hovered_object_id;
+        selected_vertex_id = -1;
+        console.log(clickedObject.centroid.isSelected)
+
+        drawState = 'translation';
+
+        objects.forEach((obj) => {
+          obj.vertices.forEach((vertex) => {
+            vertex.isSelected = false
+          })
+          if (obj != clickedObject) {
+            obj.centroid.isSelected = false;
+          }
+        })
       }
     } else {
       objects.forEach((obj) => {
@@ -264,7 +305,7 @@ const getActiveObject = (currentCoor) => {
     });
 
     // Hover or Click Objects
-    if (dist(obj.centroid, currentCoor) < epsilon) {
+    if (dist(obj.centroid.coor, currentCoor) < epsilon) {
       if (hovered_object_id == -1) {
         hovered_object_id = obj.id;
         hovered_vertex_id = -1;
@@ -273,7 +314,7 @@ const getActiveObject = (currentCoor) => {
 
       } else {
         let oldObj = objects[hovered_object_id];
-        if (dist(obj.centroid, currentCoor) < dist(oldObj.centroid, currentCoor)) {
+        if (dist(obj.centroid.coor, currentCoor) < dist(oldObj.centroid.coor, currentCoor)) {
           hovered_object_id = obj.id;
           hovered_vertex_id = -1;
           obj.centroid.isHovered = true;
