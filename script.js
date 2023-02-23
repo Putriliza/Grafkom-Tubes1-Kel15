@@ -113,21 +113,8 @@ canvas.addEventListener('mousemove', (e) => {
     draw_status.innerHTML = `Translation object ${selected_object_id} ...`;
 
   } else if (drawState == 'dilation') {
-    startPointY = objects[selected_object_id].vertices[selected_vertex_id].coor[1];
-    endPointY = currentCoor[1];
-
-    centroidX = objects[selected_object_id].centroid.coor[0];
-    centroidY = objects[selected_object_id].centroid.coor[1];    
-
-    dilationFactor = (endPointY - centroidY)/(startPointY - centroidY);
-
-    objects[selected_object_id].vertices.forEach((vertex) => {
-      vertex.coor[0] = dilationFactor * (vertex.coor[0] - centroidX) + centroidX;
-      vertex.coor[1] = dilationFactor * (vertex.coor[1] - centroidY) + centroidY;
-    });
-
+    objects[selected_object_id].dilation(currentCoor);
     draw_status.innerHTML = `Dilating object ${selected_object_id} ...`;
-
   }
   
   
@@ -182,13 +169,16 @@ canvas.addEventListener('mousemove', (e) => {
     lastObj.moveVertex(1, [startPointX, endPointY])
     lastObj.moveVertex(2, [endPointX, startPointY])
     lastObj.moveVertex(3, currentCoor)
+  } else if (drawState =='polygon2') {
+    lastObj.moveVertex(lastObj.vertices.length - 1, currentCoor);
   }
 });
 
 console.log(objects)
 
 canvas.addEventListener('dblclick', (e) => {
-  if (drawState == 'polygon') {
+  if (drawState == 'polygon2') {
+    objects[objects.length - 1].removeLastTwoVertices();
     drawState = '';
     draw_status.innerHTML = '...';
   } else if (drawState == 'translation') {
@@ -213,7 +203,6 @@ canvas.addEventListener('mouseup', (e) => {
 
           if (clickedVertex.isSelected) {
             drawState = 'drag';
-            //drawState = 'dilation';
 
             objects.forEach((obj) => {
               obj.vertices.forEach((vertex) => {
@@ -352,15 +341,14 @@ canvas.addEventListener('mouseup', (e) => {
     drawState = '';
     draw_status.innerHTML = '...';
   } else if (drawState == 'polygon') {
-
-    let isFirstVertice = lastObj.vertices[0].coor[0] === 0 && lastObj.vertices[0].coor[1] === 0
-
-    if (isFirstVertice){
+    if (lastObj.isFirstVertex) {
       lastObj.moveVertex(0, currentCoor);
-    } else{
-      lastObj.addVertex(currentCoor, [0, 0, 0, 1]);
     }
-    
+    lastObj.addVertex(currentCoor, [0, 0, 0, 1]);
+    drawState = 'polygon2';
+  } else if (drawState == 'polygon2') {
+    lastObj.moveVertex(lastObj.vertices.length - 1, currentCoor);
+    lastObj.addVertex(currentCoor, [0, 0, 0, 1]);
   }
 });
 
@@ -433,63 +421,6 @@ const getActiveObject = (currentCoor) => {
 
 console.log(objects);
 
-// GL ----------------------------------------------------------------------------------------------
-const gl = canvas.getContext('webgl') ?? canvas.getContext('experimental-webgl');
-gl.viewport(0, 0, canvas.width, canvas.height);
-gl.clearColor(0.9, 1.0, 1.0, 1.0); // background canvas: light blue
-
-const vertexSource = `
-  attribute vec4 vPosition;
-  attribute vec4 vColor;
-  varying vec4 fColor;
-  void main(){
-    gl_Position = vPosition;
-    fColor = vColor;
-  }
-`;
-
-const fragmentSource = `
-  precision mediump float;
-  varying vec4 fColor;
-  void main(){
-    gl_FragColor = fColor;
-  }
-`;
-
-const program = initShaders(gl);
-gl.useProgram(program);
-
-render();
-
-function render() {
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  objects.forEach((obj) => {
-    obj.render(gl);
-  });
-
-  window.requestAnimationFrame(render);
-}
-
-
-function initShaders(gl) {
-  const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vertexSource);
-  const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fragmentSource);
-
-  const program = gl.createProgram();
-  gl.attachShader(program, vertexShader);
-  gl.attachShader(program, fragmentShader);
-  gl.linkProgram(program);
-
-  return program;
-}
-
-function loadShader(gl, type, source) {
-  const shader = gl.createShader(type);
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-
-  return shader;
-}
 
 // UTIL --------------------------------------------------------------------------------------------
 const dist = (p1, p2) => Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));

@@ -51,10 +51,13 @@ class Model {
     }
 
     addVertex = (coor, color) => {
-      if (!this.isExistVertex(coor)) {
-        this.vertices.push(new Point(coor, color, this.vertices.length));
-        this.setCentroid();
-      }
+      this.vertices.push(new Point(coor, color, this.vertices.length));
+      this.setCentroid();
+    }
+
+    removeLastTwoVertices = () => {
+      this.vertices.splice(-2);
+      this.setCentroid();
     }
 
     moveVertex = (id, coor) => {
@@ -85,6 +88,21 @@ class Model {
         v.coor[1] += dy;
       });
       this.setCentroid();
+    }
+
+    dilation = (coor) => {
+      const startPointY = this.vertices[selected_vertex_id].coor[1];
+      const endPointY = coor[1];
+  
+      const centroidX = this.centroid.coor[0];
+      const centroidY = this.centroid.coor[1];    
+  
+      const dilationFactor = (endPointY - centroidY)/(startPointY - centroidY);
+  
+      this.vertices.forEach((vertex) => {
+        vertex.coor[0] = dilationFactor * (vertex.coor[0] - centroidX) + centroidX;
+        vertex.coor[1] = dilationFactor * (vertex.coor[1] - centroidY) + centroidY;
+      });  
     }
 
     renderDot = (gl, vBuffer, vPosition, cBuffer, vColor) => {
@@ -243,6 +261,10 @@ class Polygon extends Model {
   constructor(id){
     super(id);
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 0));
+  }
+
+  isFirstVertex = () => {
+    return this.vertices.length === 1;
   }
 
   render = (gl) => {
