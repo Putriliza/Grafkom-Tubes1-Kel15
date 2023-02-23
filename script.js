@@ -107,9 +107,27 @@ canvas.addEventListener('mousemove', (e) => {
     drawState = 'drag2';
     objects[selected_object_id].moveVertex(selected_vertex_id, currentCoor);
     draw_status.innerHTML = `Dragging object ${selected_object_id} vertex ${selected_vertex_id} ...`;
+
   } else if (drawState == 'translation') {
     objects[selected_object_id].translation(currentCoor);
     draw_status.innerHTML = `Translation object ${selected_object_id} ...`;
+
+  } else if (drawState == 'dilation') {
+    startPointY = objects[selected_object_id].vertices[selected_vertex_id].coor[1];
+    endPointY = currentCoor[1];
+
+    centroidX = objects[selected_object_id].centroid.coor[0];
+    centroidY = objects[selected_object_id].centroid.coor[1];    
+
+    dilationFactor = (endPointY - centroidY)/(startPointY - centroidY);
+
+    objects[selected_object_id].vertices.forEach((vertex) => {
+      vertex.coor[0] = dilationFactor * (vertex.coor[0] - centroidX) + centroidX;
+      vertex.coor[1] = dilationFactor * (vertex.coor[1] - centroidY) + centroidY;
+    });
+
+    draw_status.innerHTML = `Dilating object ${selected_object_id} ...`;
+
   }
   
   
@@ -129,38 +147,26 @@ canvas.addEventListener('mousemove', (e) => {
       if ( startPointY < endPointY) { // Kuadran 1
         lastObj.moveVertex(1, [startPointX, startPointY + squareSide])
         lastObj.moveVertex(2, [startPointX + squareSide, startPointY])
-        // lastObj.moveVertex(3, [startPointX + squareSide, startPointY])
         lastObj.moveVertex(3, [startPointX + squareSide, startPointY + squareSide])
-        // lastObj.moveVertex(5, [startPointX, startPointY + squareSide])
-
 
       } else { // Kuadran 4
         lastObj.moveVertex(1, [startPointX, startPointY - squareSide])
         lastObj.moveVertex(2, [startPointX + squareSide, startPointY])
-        // lastObj.moveVertex(3, [startPointX + squareSide, startPointY])
         lastObj.moveVertex(3, [startPointX + squareSide, startPointY - squareSide])
-        // lastObj.moveVertex(5, [startPointX, startPointY - squareSide])
 
       }
-      // console.log([lastObj.vertices[0].coor, lastObj.vertices[1].coor, lastObj.vertices[2].coor, lastObj.vertices[3].coor, lastObj.vertices[4].coor, lastObj.vertices[5].coor]))
 
     } else {
 
       if ( startPointY < endPointY) { // Kuadran 2
         lastObj.moveVertex(1, [startPointX, startPointY + squareSide])
         lastObj.moveVertex(2, [startPointX - squareSide, startPointY])
-        // lastObj.moveVertex(3, [startPointX - squareSide, startPointY])
         lastObj.moveVertex(3, [startPointX - squareSide, startPointY + squareSide])
-        // lastObj.moveVertex(5, [startPointX, startPointY + squareSide])
-
-
 
       } else { // Kuadran 3
         lastObj.moveVertex(1, [startPointX, startPointY - squareSide])
         lastObj.moveVertex(2, [startPointX - squareSide, startPointY])
-        // lastObj.moveVertex(3, [startPointX - squareSide, startPointY])
         lastObj.moveVertex(3, [startPointX - squareSide, startPointY - squareSide])
-        // lastObj.moveVertex(5, [startPointX, startPointY - squareSide])
 
       }
 
@@ -175,9 +181,7 @@ canvas.addEventListener('mousemove', (e) => {
 
     lastObj.moveVertex(1, [startPointX, endPointY])
     lastObj.moveVertex(2, [endPointX, startPointY])
-    // lastObj.moveVertex(3, [endPointX, startPointY])
     lastObj.moveVertex(3, currentCoor)
-    // lastObj.moveVertex(5, [startPointX, endPointY])
   }
 });
 
@@ -209,6 +213,71 @@ canvas.addEventListener('mouseup', (e) => {
 
           if (clickedVertex.isSelected) {
             drawState = 'drag';
+            //drawState = 'dilation';
+
+            objects.forEach((obj) => {
+              obj.vertices.forEach((vertex) => {
+                if (vertex != clickedVertex) {
+                  vertex.isSelected = false
+                }
+              })
+              obj.centroid.isSelected = false;
+            })
+          }
+          return;
+        }
+      }
+
+      // SELECT CENTROID
+      if ((dist(currentCoor, objects[hovered_object_id].centroid.coor) < epsilon) ||
+          (dist(currentCoor, objects[selected_object_id].centroid.coor) < epsilon)) {
+        let clickedObject = objects[hovered_object_id];
+        clickedObject.centroid.isSelected = !clickedObject.centroid.isSelected;
+        selected_object_id = hovered_object_id;
+        selected_vertex_id = -1;
+        console.log(clickedObject.centroid.isSelected)
+
+        //drawState = 'translation';
+        drawState = 'selected'
+
+        objects.forEach((obj) => {
+          obj.vertices.forEach((vertex) => {
+            vertex.isSelected = false
+          })
+          if (obj != clickedObject) {
+            obj.centroid.isSelected = false;
+          }
+        })
+      }
+    } else {
+      objects.forEach((obj) => {
+        obj.vertices.forEach((vertex) => {
+          vertex.isSelected = false;
+        })
+        obj.centroid.isSelected = false;
+        selected_object_id = -1;
+        selected_vertex_id = -1;
+      })
+    }
+    setSpecialMethodDisplay();
+
+  } else if (drawState == 'drag2') {
+    drawState = '';
+    draw_status.innerHTML = '...';
+
+  } else if (drawState == 'selected') {
+
+    if (hovered_object_id != -1) {
+      if (hovered_vertex_id != -1) { // DILATASI
+        if (dist(currentCoor, objects[hovered_object_id].vertices[hovered_vertex_id].coor) < epsilon) {
+          let clickedObject = objects[hovered_object_id];
+          let clickedVertex = clickedObject.vertices[hovered_vertex_id]
+          clickedVertex.isSelected = !clickedVertex.isSelected;
+          selected_object_id = hovered_object_id;
+          selected_vertex_id = hovered_vertex_id;
+
+          if (clickedVertex.isSelected) {
+            drawState = 'dilation';
 
             objects.forEach((obj) => {
               obj.vertices.forEach((vertex) => {
@@ -253,11 +322,11 @@ canvas.addEventListener('mouseup', (e) => {
         selected_vertex_id = -1;
       })
     }
-    setSpecialMethodDisplay();
-
-  } else if (drawState == 'drag2') {
+    
+  } else if (drawState == 'dilation'){
     drawState = '';
     draw_status.innerHTML = '...';
+
   } else if (drawState == 'line') {
     drawState = 'line2';
     lastObj.moveVertex(0, currentCoor);
