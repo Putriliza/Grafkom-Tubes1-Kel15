@@ -17,16 +17,32 @@ const canvas = document.getElementById('canvas');
 const draw_buttons = document.querySelectorAll('.draw-button');
 const draw_status = document.getElementById('draw-status');
 const current_coor = document.getElementById('current-coor');
-const sm_line = document.getElementById('special-method-line');
-const sm_square = document.getElementById('special-method-square');
-const sm_rectangle = document.getElementById('special-method-rectangle');
-const sm_polygon = document.getElementById('special-method-polygon');
 
-draw_buttons.forEach((button) => {
-  button.addEventListener('click', (e) => {
-    drawAction(e.target.id);
-  });
+// SPECIAL METHOD LINE
+const sm_line = document.getElementById('special-method-line');
+const line_length_slider = document.getElementById('line-length-slider');
+const line_length_value = document.getElementById('line-length-value');
+
+line_length_slider.addEventListener('input', (e) => {
+  const length = parseFloat(e.target.value);
+  line_length_value.innerHTML = `Length: ${length}`;
+  if (selected_object_id != -1) {
+    if (objects[selected_object_id].getModelName() == 'Line') {
+      objects[selected_object_id].setLength(length)
+    }
+  }
+  console.log(objects[selected_object_id].getLength());
 });
+
+
+// SPECIAL METHOD SQUARE
+const sm_square = document.getElementById('special-method-square');
+
+// SPECIAL METHOD RECTANGLE
+const sm_rectangle = document.getElementById('special-method-rectangle');
+
+// SPECIAL METHOD POLYGON
+const sm_polygon = document.getElementById('special-method-polygon');
 
 // set special method display
 setSpecialMethodDisplay = () => {
@@ -40,6 +56,8 @@ setSpecialMethodDisplay = () => {
   if (selected_object_id != -1) {
     if (objects[selected_object_id].getModelName() == 'Line') {
       setter('block', 'none', 'none', 'none');
+      line_length_slider.value = objects[selected_object_id].getLength();
+      line_length_value.innerHTML = `Length: ${line_length_slider.value}`
     } else if (objects[selected_object_id].getModelName() == 'Square') {
       setter('none', 'block', 'none', 'none');
     } else if (objects[selected_object_id].getModelName() == 'Rectangle') {
@@ -51,6 +69,13 @@ setSpecialMethodDisplay = () => {
     setter('none', 'none', 'none', 'none');
   }
 }
+
+
+draw_buttons.forEach((button) => {
+  button.addEventListener('click', (e) => {
+    drawAction(e.target.id);
+  });
+});
 
 
 const drawAction = (model) => {
@@ -201,7 +226,6 @@ canvas.addEventListener('mouseup', (e) => {
       // SELECT CENTROID
       if ((dist(currentCoor, objects[hovered_object_id].centroid.coor) < epsilon) ||
           (dist(currentCoor, objects[selected_object_id].centroid.coor) < epsilon)) {
-        console.log('centroid')
         let clickedObject = objects[hovered_object_id];
         clickedObject.centroid.isSelected = !clickedObject.centroid.isSelected;
         selected_object_id = hovered_object_id;

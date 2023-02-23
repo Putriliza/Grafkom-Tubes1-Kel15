@@ -106,17 +106,21 @@ class Line extends Model {
     return dist(this.vertices[0].coor, this.vertices[1].coor)
   }
 
-  // setLength = (length) => {
-  //   const dx = this.vertices[1].coor[0] - this.vertices[0].coor[0];
-  //   const dy = this.vertices[1].coor[1] - this.vertices[0].coor[1];
-  //   const angle = Math.atan2(dy, dx);
-  //   const newCoor = [
-  //     this.vertices[0].coor[0] + length * Math.cos(angle),
-  //     this.vertices[0].coor[1] + length * Math.sin(angle)
-  //   ];
-  //   this.vertices[1].setCoor(newCoor);
-  // }
+  setLength = (length) => {
+    let dx = this.vertices[1].coor[0] - this.vertices[0].coor[0];
+    let dy = this.vertices[1].coor[1] - this.vertices[0].coor[1];
+    let angle = Math.atan2(dy, dx);
+    let x0 = this.centroid.coor[0] - length * Math.cos(angle)/2;
+    let y0 = this.centroid.coor[1] - length * Math.sin(angle)/2;
+    let x1 = this.centroid.coor[0] + length * Math.cos(angle)/2;
+    let y1 = this.centroid.coor[1] + length * Math.sin(angle)/2;
+    this.vertices[0].coor = [x0, y0];
+    this.vertices[1].coor = [x1, y1];
 
+    console.log(`x1: ${this.vertices[1].coor[0]}, y1: ${this.vertices[1].coor[1]}`);
+    console.log(`x2: ${this.vertices[0].coor[0]}, y2: ${this.vertices[0].coor[1]}`);
+    console.log(this.getLength(), length);
+  }
 
   render = (gl) => {
     const verticesCoor = [];
