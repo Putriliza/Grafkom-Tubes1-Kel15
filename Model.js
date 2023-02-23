@@ -90,8 +90,8 @@ class Model {
       this.setCentroid();
     }
 
-    dilation = (coor) => {
-      const startPointY = this.vertices[selected_vertex_id].coor[1];
+    dilation = (coor, vertexId) => {
+      const startPointY = this.vertices[vertexId].coor[1];
       const endPointY = coor[1];
   
       const centroidX = this.centroid.coor[0];
