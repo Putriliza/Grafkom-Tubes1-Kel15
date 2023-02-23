@@ -150,8 +150,8 @@ class Square extends Model {
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 1));
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 2));
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 3));
-    this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 4));
-    this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 5));
+    // this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 4));
+    // this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 5));
   }
 
   render = (gl) => {
@@ -180,7 +180,7 @@ class Square extends Model {
     gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vColor);
 
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, verticesCoor.length);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, verticesCoor.length);
 
     this.renderDot(gl, vBuffer, vPosition, cBuffer, vColor)
   }
@@ -193,8 +193,8 @@ class Rectangle extends Model {
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 1));
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 2));
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 3));
-    this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 4));
-    this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 5));
+    // this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 4));
+    // this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 5));
   }
 
   render = (gl) => {
@@ -223,7 +223,7 @@ class Rectangle extends Model {
     gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vColor);
 
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, verticesCoor.length);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, verticesCoor.length);
 
     this.renderDot(gl, vBuffer, vPosition, cBuffer, vColor)
   }

@@ -91,17 +91,17 @@ canvas.addEventListener('mousemove', (e) => {
       if ( startPointY < endPointY) { // Kuadran 1
         lastObj.moveVertex(1, [startPointX, startPointY + squareSide])
         lastObj.moveVertex(2, [startPointX + squareSide, startPointY])
-        lastObj.moveVertex(3, [startPointX + squareSide, startPointY])
-        lastObj.moveVertex(4, [startPointX + squareSide, startPointY + squareSide])
-        lastObj.moveVertex(5, [startPointX, startPointY + squareSide])
+        // lastObj.moveVertex(3, [startPointX + squareSide, startPointY])
+        lastObj.moveVertex(3, [startPointX + squareSide, startPointY + squareSide])
+        // lastObj.moveVertex(5, [startPointX, startPointY + squareSide])
 
 
       } else { // Kuadran 4
         lastObj.moveVertex(1, [startPointX, startPointY - squareSide])
         lastObj.moveVertex(2, [startPointX + squareSide, startPointY])
-        lastObj.moveVertex(3, [startPointX + squareSide, startPointY])
-        lastObj.moveVertex(4, [startPointX + squareSide, startPointY - squareSide])
-        lastObj.moveVertex(5, [startPointX, startPointY - squareSide])
+        // lastObj.moveVertex(3, [startPointX + squareSide, startPointY])
+        lastObj.moveVertex(3, [startPointX + squareSide, startPointY - squareSide])
+        // lastObj.moveVertex(5, [startPointX, startPointY - squareSide])
 
       }
       // console.log([lastObj.vertices[0].coor, lastObj.vertices[1].coor, lastObj.vertices[2].coor, lastObj.vertices[3].coor, lastObj.vertices[4].coor, lastObj.vertices[5].coor]))
@@ -111,18 +111,18 @@ canvas.addEventListener('mousemove', (e) => {
       if ( startPointY < endPointY) { // Kuadran 2
         lastObj.moveVertex(1, [startPointX, startPointY + squareSide])
         lastObj.moveVertex(2, [startPointX - squareSide, startPointY])
-        lastObj.moveVertex(3, [startPointX - squareSide, startPointY])
-        lastObj.moveVertex(4, [startPointX - squareSide, startPointY + squareSide])
-        lastObj.moveVertex(5, [startPointX, startPointY + squareSide])
+        // lastObj.moveVertex(3, [startPointX - squareSide, startPointY])
+        lastObj.moveVertex(3, [startPointX - squareSide, startPointY + squareSide])
+        // lastObj.moveVertex(5, [startPointX, startPointY + squareSide])
 
 
 
       } else { // Kuadran 3
         lastObj.moveVertex(1, [startPointX, startPointY - squareSide])
         lastObj.moveVertex(2, [startPointX - squareSide, startPointY])
-        lastObj.moveVertex(3, [startPointX - squareSide, startPointY])
-        lastObj.moveVertex(4, [startPointX - squareSide, startPointY - squareSide])
-        lastObj.moveVertex(5, [startPointX, startPointY - squareSide])
+        // lastObj.moveVertex(3, [startPointX - squareSide, startPointY])
+        lastObj.moveVertex(3, [startPointX - squareSide, startPointY - squareSide])
+        // lastObj.moveVertex(5, [startPointX, startPointY - squareSide])
 
       }
 
@@ -137,9 +137,9 @@ canvas.addEventListener('mousemove', (e) => {
 
     lastObj.moveVertex(1, [startPointX, endPointY])
     lastObj.moveVertex(2, [endPointX, startPointY])
-    lastObj.moveVertex(3, [endPointX, startPointY])
-    lastObj.moveVertex(4, currentCoor)
-    lastObj.moveVertex(5, [startPointX, endPointY])
+    // lastObj.moveVertex(3, [endPointX, startPointY])
+    lastObj.moveVertex(3, currentCoor)
+    // lastObj.moveVertex(5, [startPointX, endPointY])
   }
 });
 
