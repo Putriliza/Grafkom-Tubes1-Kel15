@@ -145,6 +145,12 @@ canvas.addEventListener('mousemove', (e) => {
 
 console.log(objects)
 
+canvas.addEventListener('dblclick', (e) => {
+  if (drawState == 'polygon') {
+    drawState = '';
+    draw_status.innerHTML = '...';
+  }
+});
 
 canvas.addEventListener('mouseup', (e) => {
   currentCoor = getMouseCoor(e);
@@ -224,12 +230,7 @@ canvas.addEventListener('mouseup', (e) => {
   }
 });
 
-canvas.addEventListener('dblclick', (e) => {
-  if (drawState == 'polygon') {
-    drawState = '';
-    draw_status.innerHTML = '...';
-  }
-});
+
 
 const getActiveObject = (currentCoor) => {
   let isExist = false;
