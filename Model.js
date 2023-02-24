@@ -41,6 +41,7 @@ class Model {
     constructor(id){
       this.id = id;
       this.vertices = [];
+      this.angle = 0
       this.centroid = new Point([0,0], [0, 0, 0, 1], 99, true);
 
       // Model isSelected or isHovered based on the centroid
@@ -103,6 +104,21 @@ class Model {
         vertex.coor[0] = dilationFactor * (vertex.coor[0] - centroidX) + centroidX;
         vertex.coor[1] = dilationFactor * (vertex.coor[1] - centroidY) + centroidY;
       });  
+    }
+
+    rotate = (newAngle) => {
+      
+      const angleInDegrees = newAngle - this.angle
+      this.angle = newAngle
+      const angleInRadians = angleInDegrees * Math.PI / 180
+      
+      this.vertices.forEach((vertex) => {
+        var oldX = vertex.coor[0] - this.centroid.coor[0]
+        var oldY = vertex.coor[1] - this.centroid.coor[1]
+        
+        vertex.coor[0] = this.centroid.coor[0] + (oldX * Math.cos(angleInRadians) - oldY * Math.sin(angleInRadians))
+        vertex.coor[1] = this.centroid.coor[1] + (oldX * Math.sin(angleInRadians) + oldY * Math.cos(angleInRadians))
+      })
     }
 
     renderDot = (gl, vBuffer, vPosition, cBuffer, vColor) => {

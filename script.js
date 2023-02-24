@@ -17,6 +17,8 @@ const active_object = document.getElementById('active-object');
 const sm_line = document.getElementById('special-method-line');
 const line_length_slider = document.getElementById('line-length-slider');
 const line_length_value = document.getElementById('line-length-value');
+const rotation_degree_slider = document.getElementById('rotation-degree-slider');
+const rotation_degree_value = document.getElementById('rotation-degree-value');
 
 line_length_slider.addEventListener('input', (e) => {
   const length = parseFloat(e.target.value);
@@ -27,6 +29,14 @@ line_length_slider.addEventListener('input', (e) => {
     }
   }
   console.log(objects[selectedObjectId].getLength());
+});
+
+rotation_degree_slider.addEventListener('input', (e) => {
+  const degree = e.target.value;
+
+  if (selectedObjectId != -1) {
+    objects[selectedObjectId].rotate(degree) 
+  }
 });
 
 
