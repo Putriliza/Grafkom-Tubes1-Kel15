@@ -32,6 +32,19 @@ line_length_slider.addEventListener('input', (e) => {
 
 // SPECIAL METHOD SQUARE
 const sm_square = document.getElementById('special-method-square');
+const square_length_slider = document.getElementById('square-length-slider');
+const square_length_value = document.getElementById('square-length-value');
+
+square_length_slider.addEventListener('input', (e) => {
+  const length = parseFloat(e.target.value);
+  square_length_value.innerHTML = `Length: ${length}`;
+  if (selectedObjectId != -1) {
+    if (objects[selectedObjectId].getModelName() == 'Square') {
+      objects[selectedObjectId].setLength(length);
+    }
+  }
+  console.log(objects[selectedObjectId].getLength());
+});
 
 // SPECIAL METHOD RECTANGLE
 const sm_rectangle = document.getElementById('special-method-rectangle');
@@ -55,6 +68,8 @@ const setPropertyDisplay = () => {
       line_length_value.innerHTML = `Length: ${line_length_slider.value}`
     } else if (objects[selectedObjectId].getModelName() == 'Square') {
       setter('none', 'block', 'none', 'none');
+      square_length_slider.value = objects[selectedObjectId].getLength();
+      square_length_value.innerHTML = `Side Length: ${square_length_slider.value}`
     } else if (objects[selectedObjectId].getModelName() == 'Rectangle') {
       setter('none', 'none', 'block', 'none');
     } else if (objects[selectedObjectId].getModelName() == 'Polygon') {
