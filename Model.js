@@ -323,6 +323,14 @@ class Polygon extends Model {
     return this.vertices.length === 1;
   }
 
+  deleteVertex = (id) => {
+    this.vertices.splice(id, 1);
+    this.setCentroid();
+    for (let i = 0; i < this.vertices.length; i++) {
+      this.vertices[i].id = i;
+    }
+  }
+
   render = (gl) => {
     const verticesCoor = [];
     const verticesColors = [];
