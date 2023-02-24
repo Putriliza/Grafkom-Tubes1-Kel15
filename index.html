@@ -44,11 +44,25 @@
           </div>
           <div id="special-method-polygon" style="display: none;">
             <h3>Polygon Method</h3>
+            <div style="display: inline-flex">
+              <button id="delete-vertex-btn">Delete Vertex</button>
+            </div>
           </div>
         </div>
-        <div id="general-methods">
+        <div id="general-methods" >
           <h3>General Methods</h3>
           <!-- translation dll -->
+          <div style="display: inline-flex; flex-direction: column;">
+            <div style="display: inline-flex">
+              <p id="rotation-degree-value">Rotation degree: </p>
+              <input type="range" min="0" max="360" step="5" value="0" id="rotation-degree-slider" />
+            </div>
+            <div style="display: inline-flex">
+              <p id="rotation-degree-value">Color: </p>
+              <input type="color" id="change-color-input" />
+            </div>
+          </div>
+          
         </div>
       </div>
       

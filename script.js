@@ -19,6 +19,8 @@ const line_length_slider = document.getElementById('line-length-slider');
 const line_length_value = document.getElementById('line-length-value');
 const rotation_degree_slider = document.getElementById('rotation-degree-slider');
 const rotation_degree_value = document.getElementById('rotation-degree-value');
+const delete_vertex_button = document.getElementById('delete-vertex-btn');
+const change_color_input = document.getElementById('change-color-input');
 
 line_length_slider.addEventListener('input', (e) => {
   const length = parseFloat(e.target.value);
@@ -39,6 +41,33 @@ rotation_degree_slider.addEventListener('input', (e) => {
   }
 });
 
+delete_vertex_button.addEventListener('click', (e) => {
+  if (selectedObjectId != -1) {
+    objects[selectedObjectId].deleteVertex(selectedVertexId)
+  }
+});
+
+change_color_input.addEventListener('input', (e)=>{
+  if (selectedObjectId != -1) {
+    
+    hexColor = e.target.value
+
+    var rgbaColor = [1]
+    const [r, g, b] = hexColor.match(/\w\w/g).map(x => parseInt(x, 16)/256);
+    rgbaColor.unshift(b)
+    rgbaColor.unshift(g)
+    rgbaColor.unshift(r)
+  
+    // Update Object's color
+    if (selectedVertexId === -1) {
+      objects[selectedObjectId].vertices.forEach(vertex =>{
+        vertex.color = rgbaColor
+      })
+    } else {
+      objects[selectedObjectId].vertices[selectedVertexId].color = rgbaColor;
+    }
+  }
+})
 
 // SPECIAL METHOD SQUARE
 const sm_square = document.getElementById('special-method-square');
@@ -344,10 +373,12 @@ canvas.addEventListener('mouseup', (e) => {
           selectedVertexId = hoveredVertexId;
 
           if (clickedVertex.isSelected) {
+            
             drawState = 'dilation';
 
             objects.forEach((obj) => {
               obj.vertices.forEach((vertex) => {
+                
                 if (vertex != clickedVertex) {
                   vertex.isSelected = false
                 }
@@ -496,9 +527,6 @@ const getActiveObject = (currentCoor) => {
     });
   }
 };
-
-console.log(objects);
-
 
 // UTIL --------------------------------------------------------------------------------------------
 const dist = (p1, p2) => Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
