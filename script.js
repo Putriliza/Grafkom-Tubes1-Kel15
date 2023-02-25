@@ -131,6 +131,8 @@ square_length_slider.addEventListener('input', (e) => {
 const sm_rectangle = document.getElementById('special-method-rectangle');
 const rectangle_length_slider = document.getElementById('rectangle-length-slider');
 const rectangle_length_value = document.getElementById('rectangle-length-value');
+const rectangle_width_slider = document.getElementById('rectangle-width-slider');
+const rectangle_width_value = document.getElementById('rectangle-width-value');
 
 rectangle_length_slider.addEventListener('input', (e) => {
   const length = parseFloat(e.target.value);
@@ -142,6 +144,19 @@ rectangle_length_slider.addEventListener('input', (e) => {
   }
   console.log(objects[selectedObjectId].getLength());
 });
+
+rectangle_width_slider.addEventListener('input', (e) => {
+  const width = parseFloat(e.target.value);
+  rectangle_width_value.innerHTML = `Width: ${width}`;
+  if (selectedObjectId != -1) {
+    if (objects[selectedObjectId].getModelName() == 'Rectangle') {
+      objects[selectedObjectId].setWidth(width);
+    }
+  }
+  console.log(objects[selectedObjectId].getWidth());
+});
+
+
 
 // SPECIAL METHOD POLYGON
 const sm_polygon = document.getElementById('special-method-polygon');
@@ -168,6 +183,8 @@ const setPropertyDisplay = () => {
       setter('none', 'none', 'block', 'none');
       rectangle_length_slider.value = objects[selectedObjectId].getLength();
       rectangle_length_value.innerHTML = `Length: ${rectangle_length_slider.value}`
+      rectangle_width_slider.value = objects[selectedObjectId].getWidth();
+      rectangle_width_value.innerHTML = `Width: ${rectangle_width_slider.value}`
     } else if (objects[selectedObjectId].getModelName() == 'Polygon') {
       setter('none', 'none', 'none', 'block');
     } else {
