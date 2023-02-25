@@ -20,6 +20,7 @@ const line_length_value = document.getElementById('line-length-value');
 const rotation_degree_slider = document.getElementById('rotation-degree-slider');
 const rotation_degree_value = document.getElementById('rotation-degree-value');
 const delete_vertex_button = document.getElementById('delete-vertex-btn');
+const convex_hull_button = document.getElementById('convex-hull-button');
 const change_color_input = document.getElementById('change-color-input');
 
 const save_objects_button = document.getElementById('save-objects-button');
@@ -51,6 +52,26 @@ delete_vertex_button.addEventListener('click', (e) => {
     objects[selectedObjectId].deleteVertex(selectedVertexId)
   }
 });
+
+convex_hull_button.addEventListener('click', (e) => {
+  if (selectedObjectId != -1) {
+    let hull = convexHull(objects[selectedObjectId].vertices);
+
+    objects[selectedObjectId].vertices.forEach(objVertices => {
+      let isHull = false;
+
+      hull.forEach(h => {
+        if (objVertices.id == h.id) {
+          isHull = true;
+        }
+      });
+
+      if (!isHull) {
+        objects[selectedObjectId].deleteVertex(objVertices.id);
+      }
+    });
+  }  
+})
 
 change_color_input.addEventListener('input', (e)=>{
   if (selectedObjectId != -1) {
@@ -110,6 +131,8 @@ square_length_slider.addEventListener('input', (e) => {
 const sm_rectangle = document.getElementById('special-method-rectangle');
 const rectangle_length_slider = document.getElementById('rectangle-length-slider');
 const rectangle_length_value = document.getElementById('rectangle-length-value');
+const rectangle_width_slider = document.getElementById('rectangle-width-slider');
+const rectangle_width_value = document.getElementById('rectangle-width-value');
 
 rectangle_length_slider.addEventListener('input', (e) => {
   const length = parseFloat(e.target.value);
@@ -121,6 +144,19 @@ rectangle_length_slider.addEventListener('input', (e) => {
   }
   console.log(objects[selectedObjectId].getLength());
 });
+
+rectangle_width_slider.addEventListener('input', (e) => {
+  const width = parseFloat(e.target.value);
+  rectangle_width_value.innerHTML = `Width: ${width}`;
+  if (selectedObjectId != -1) {
+    if (objects[selectedObjectId].getModelName() == 'Rectangle') {
+      objects[selectedObjectId].setWidth(width);
+    }
+  }
+  console.log(objects[selectedObjectId].getWidth());
+});
+
+
 
 // SPECIAL METHOD POLYGON
 const sm_polygon = document.getElementById('special-method-polygon');
@@ -147,6 +183,8 @@ const setPropertyDisplay = () => {
       setter('none', 'none', 'block', 'none');
       rectangle_length_slider.value = objects[selectedObjectId].getLength();
       rectangle_length_value.innerHTML = `Length: ${rectangle_length_slider.value}`
+      rectangle_width_slider.value = objects[selectedObjectId].getWidth();
+      rectangle_width_value.innerHTML = `Width: ${rectangle_width_slider.value}`
     } else if (objects[selectedObjectId].getModelName() == 'Polygon') {
       setter('none', 'none', 'none', 'block');
     } else {
@@ -641,6 +679,47 @@ function loadObjectsFromJsonFileAndAddToCanvas(array, filePath) {
     })
     .catch(error => console.error(error));
 }
+
+// Check if point c is to the left of the directed line from a to b
+function isLeft(a, b, c) {
+  const ax = a.coor[0], ay = a.coor[1];
+  const bx = b.coor[0], by = b.coor[1];
+  const cx = c.coor[0], cy = c.coor[1];
+  return ((bx - ax) * (cy - ay) - (by - ay) * (cx - ax)) > 0;
+}
+
+function convexHull(vertices) {
+  // Find the leftmost point as the starting point of the hull
+  let leftmost = 0;
+  for (let i = 1; i < vertices.length; i++) {
+    if (vertices[i].coor[0] < vertices[leftmost].coor[0]) {
+      leftmost = i;
+    }
+  }
+
+  // Initialize the hull with the leftmost point
+  let hull = [leftmost];
+
+  // Find the next point in the hull by selecting the point that has the
+  // smallest angle from the previous point
+  let prev = leftmost;
+  do {
+    let next = null;
+    for (let i = 0; i < vertices.length; i++) {
+      if (i === prev) continue;
+
+      if (next === null || isLeft(vertices[prev], vertices[next], vertices[i])) {
+        next = i;
+      }
+    }
+    hull.push(next);
+    prev = next;
+  } while (prev !== leftmost);
+
+  // Convert the list of indices to the list of points
+  return hull.map(i => vertices[i]);
+}
+
 
 const epsilon = 0.02;
 

@@ -379,36 +379,38 @@ class Rectangle extends Model {
   }
 
   getLength = () => {
-    return dist(this.vertices[0].coor, this.vertices[1].coor);
+    return dist(this.vertices[3].coor, this.vertices[1].coor);
   }
 
   getWidth = () => {
-    return dist(this.vertices[0].coor, this.vertices[2].coor);
+    return dist(this.vertices[3].coor, this.vertices[2].coor);
   }
 
   setLength = (length) => {
-    // Count Desired Diagonal
-    let newLength = Math.sqrt(Math.pow(length, 2) + Math.pow(this.getWidth(), 2));
 
-    // Real Diagonal 1
-    let dx1 = this.vertices[3].coor[0] - this.vertices[0].coor[0];
-    let dy1 = this.vertices[3].coor[1] - this.vertices[0].coor[1];
+    // New Length 1
+    let dx1 = this.vertices[3].coor[0] - this.vertices[1].coor[0];
+    let dy1 = this.vertices[3].coor[1] - this.vertices[1].coor[1];
     let angle1 = Math.atan2(dy1, dx1);
 
-    let x0 = this.centroid.coor[0] - newLength * Math.cos(angle1)/2;
-    let y0 = this.centroid.coor[1] - newLength * Math.sin(angle1)/2;
-    let x3 = this.centroid.coor[0] + newLength * Math.cos(angle1)/2;
-    let y3 = this.centroid.coor[1] + newLength * Math.sin(angle1)/2;
+    let midPoint1 = [(this.vertices[3].coor[0] + this.vertices[1].coor[0]) / 2, (this.vertices[3].coor[1] + this.vertices[1].coor[1]) / 2];
 
-    // Real Diagonal 2
-    let dx2 = this.vertices[2].coor[0] - this.vertices[1].coor[0];
-    let dy2 = this.vertices[2].coor[1] - this.vertices[1].coor[1];
+    let x1 = midPoint1[0] - length * Math.cos(angle1)/2;
+    let y1 = midPoint1[1] - length * Math.sin(angle1)/2;
+    let x3 = midPoint1[0] + length * Math.cos(angle1)/2;
+    let y3 = midPoint1[1] + length * Math.sin(angle1)/2;
+
+    // New Length 2
+    let dx2 = this.vertices[2].coor[0] - this.vertices[0].coor[0];
+    let dy2 = this.vertices[2].coor[1] - this.vertices[0].coor[1];
     let angle2 = Math.atan2(dy2, dx2);
 
-    let x1 = this.centroid.coor[0] - newLength * Math.cos(angle2)/2;
-    let y1 = this.centroid.coor[1] - newLength * Math.sin(angle2)/2;
-    let x2 = this.centroid.coor[0] + newLength * Math.cos(angle2)/2;
-    let y2 = this.centroid.coor[1] + newLength * Math.sin(angle2)/2;
+    let midPoint2 = [(this.vertices[2].coor[0] + this.vertices[0].coor[0]) / 2, (this.vertices[2].coor[1] + this.vertices[0].coor[1]) / 2];
+
+    let x0 = midPoint2[0] - length * Math.cos(angle2)/2;
+    let y0 = midPoint2[1] - length * Math.sin(angle2)/2;
+    let x2 = midPoint2[0] + length * Math.cos(angle2)/2;
+    let y2 = midPoint2[1] + length * Math.sin(angle2)/2;
 
     this.vertices[0].coor = [x0, y0];
     this.vertices[1].coor = [x1, y1];
@@ -420,6 +422,44 @@ class Rectangle extends Model {
     console.log(`x2: ${this.vertices[2].coor[0]}, y2: ${this.vertices[2].coor[1]}`);
     console.log(`x3: ${this.vertices[3].coor[0]}, y3: ${this.vertices[3].coor[1]}`);
     console.log(this.getLength(), length);
+  }
+
+  setWidth = (width) => {
+
+    // New width 1
+    let dx1 = this.vertices[3].coor[0] - this.vertices[2].coor[0];
+    let dy1 = this.vertices[3].coor[1] - this.vertices[2].coor[1];
+    let angle1 = Math.atan2(dy1, dx1);
+
+    let midPoint1 = [(this.vertices[3].coor[0] + this.vertices[2].coor[0]) / 2, (this.vertices[3].coor[1] + this.vertices[2].coor[1]) / 2];
+
+    let x2 = midPoint1[0] - width * Math.cos(angle1)/2;
+    let y2 = midPoint1[1] - width * Math.sin(angle1)/2;
+    let x3 = midPoint1[0] + width * Math.cos(angle1)/2;
+    let y3 = midPoint1[1] + width * Math.sin(angle1)/2;
+
+    // New width 2
+    let dx2 = this.vertices[1].coor[0] - this.vertices[0].coor[0];
+    let dy2 = this.vertices[1].coor[1] - this.vertices[0].coor[1];
+    let angle2 = Math.atan2(dy2, dx2);
+
+    let midPoint2 = [(this.vertices[1].coor[0] + this.vertices[0].coor[0]) / 2, (this.vertices[1].coor[1] + this.vertices[0].coor[1]) / 2];
+
+    let x0 = midPoint2[0] - width * Math.cos(angle2)/2;
+    let y0 = midPoint2[1] - width * Math.sin(angle2)/2;
+    let x1 = midPoint2[0] + width * Math.cos(angle2)/2;
+    let y1 = midPoint2[1] + width * Math.sin(angle2)/2;
+
+    this.vertices[0].coor = [x0, y0];
+    this.vertices[1].coor = [x1, y1];
+    this.vertices[2].coor = [x2, y2];
+    this.vertices[3].coor = [x3, y3];
+
+    console.log(`x0: ${this.vertices[0].coor[0]}, y0: ${this.vertices[0].coor[1]}`);
+    console.log(`x1: ${this.vertices[1].coor[0]}, y1: ${this.vertices[1].coor[1]}`);
+    console.log(`x2: ${this.vertices[2].coor[0]}, y2: ${this.vertices[2].coor[1]}`);
+    console.log(`x3: ${this.vertices[3].coor[0]}, y3: ${this.vertices[3].coor[1]}`);
+    console.log(this.getWidth(), width);
   }
 
   render = (gl) => {
