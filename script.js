@@ -24,6 +24,8 @@ const change_color_input = document.getElementById('change-color-input');
 
 const save_objects_button = document.getElementById('save-objects-button');
 const load_objects_button = document.getElementById('load-objects-button');
+const file = document.getElementById('file');
+var filePath = '';
 
 line_length_slider.addEventListener('input', (e) => {
   const length = parseFloat(e.target.value);
@@ -78,9 +80,14 @@ save_objects_button.addEventListener('click', (e) => {
   saveToFile(json, 'objects.json');
 })
 
+file.addEventListener("change", function(event) {
+  filePath = file.value.split("\\").pop();
+});
+
 load_objects_button.addEventListener('click', (e) => {
-  loadObjectsFromJsonFileAndAddToCanvas(objects, 'objects.json');
-  console.log(objects);
+  if (filePath != '') {
+    loadObjectsFromJsonFileAndAddToCanvas(objects, filePath);
+  }
 })
 
 // SPECIAL METHOD SQUARE
@@ -630,7 +637,6 @@ function loadObjectsFromJsonFileAndAddToCanvas(array, filePath) {
 
         }
       });
-      console.log(array);
     })
     .catch(error => console.error(error));
 }
