@@ -215,7 +215,23 @@ class Square extends Model {
     // this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 4));
     // this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 5));
   }
+  
+  moveVertex = (id, coor, moving = false) => {
 
+    // initialize square
+    if (!moving){
+      this.vertices[id].setCoor(coor);
+      this.setCentroid();
+      return
+    } 
+
+    // var deltaX = this.vertices[id].coor[0] - coor[0];
+    // var deltaY = this.vertices[id].coor[1] - coor[1];
+    // var rad= Math.atan2(deltaY, deltaX);
+    // rad = rad * 180 / Math.PI
+    // // this.rotate(rad)
+    this.dilation(coor, id);
+  }
   setAtrributes = (id, vertices, angle, centroid) => {
     this.id = id;
 
@@ -314,6 +330,23 @@ class Rectangle extends Model {
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 3));
     // this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 4));
     // this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 5));
+  }
+
+  moveVertex = (id, coor, moving = false) => {
+
+    // initialize rectangle
+    if (!moving){
+      this.vertices[id].setCoor(coor);
+      this.setCentroid();
+      return
+    } 
+
+    // var deltaX = this.vertices[id].coor[0] - coor[0];
+    // var deltaY = this.vertices[id].coor[1] - coor[1];
+    // var rad= Math.atan2(deltaY, deltaX);
+    // rad = rad * 180 / Math.PI
+    // // this.rotate(rad)
+    this.dilation(coor, id);
   }
 
   setAtrributes = (id, vertices, angle, centroid) => {

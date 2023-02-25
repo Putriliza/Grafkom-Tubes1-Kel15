@@ -248,7 +248,8 @@ canvas.addEventListener('mousemove', (e) => {
   // MODIFY OBJECT
   if (drawState == 'drag' || drawState == 'drag2') {
     drawState = 'drag2';
-    objects[selectedObjectId].moveVertex(selectedVertexId, currentCoor);
+    let isSquare = objects[selectedObjectId].type == 'Square' || 'Rectangle'
+    objects[selectedObjectId].moveVertex(selectedVertexId, currentCoor, isSquare);
 
   } else if (drawState == 'translation') {
     objects[selectedObjectId].translation(currentCoor);
