@@ -132,8 +132,25 @@ class Model {
 class Line extends Model {
   constructor(id) {
     super(id);
+    this.type = 'Line';
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 0));
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 1));
+  }
+
+  setAtrributes = (id, vertices, angle, centroid) => {
+    this.id = id;
+
+    let count = 0;
+    this.vertices.forEach(v => {
+      v.coor = vertices[count].coor;
+      v.color = vertices[count].color;
+      count++;
+    });
+    this.angle = angle;
+    this.centroid.coor = centroid.coor;
+    this.centroid.color = centroid.color;
+    this.centroid.id = centroid.id;
+    this.centroid.isCentroid = centroid.isCentroid;
   }
 
   getLength = () => {
@@ -190,12 +207,29 @@ class Line extends Model {
 class Square extends Model {
   constructor(id){
     super(id);
+    this.type = 'Square';
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 0));
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 1));
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 2));
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 3));
     // this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 4));
     // this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 5));
+  }
+
+  setAtrributes = (id, vertices, angle, centroid) => {
+    this.id = id;
+
+    let count = 0;
+    this.vertices.forEach(v => {
+      v.coor = vertices[count].coor;
+      v.color = vertices[count].color;
+      count++;
+    });
+    this.angle = angle;
+    this.centroid.coor = centroid.coor;
+    this.centroid.color = centroid.color;
+    this.centroid.id = centroid.id;
+    this.centroid.isCentroid = centroid.isCentroid;
   }
 
   getLength = () => {
@@ -273,12 +307,29 @@ class Square extends Model {
 class Rectangle extends Model {
   constructor(id){
     super(id);
+    this.type = 'Rectangle';
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 0));
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 1));
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 2));
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 3));
     // this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 4));
     // this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 5));
+  }
+
+  setAtrributes = (id, vertices, angle, centroid) => {
+    this.id = id;
+
+    let count = 0;
+    this.vertices.forEach(v => {
+      v.coor = vertices[count].coor;
+      v.color = vertices[count].color;
+      count++;
+    });
+    this.angle = angle;
+    this.centroid.coor = centroid.coor;
+    this.centroid.color = centroid.color;
+    this.centroid.id = centroid.id;
+    this.centroid.isCentroid = centroid.isCentroid;
   }
 
   getLength = () => {
@@ -360,7 +411,29 @@ class Rectangle extends Model {
 class Polygon extends Model {
   constructor(id){
     super(id);
+    this.type = 'Polygon';
     this.vertices.push(new Point([0, 0], [0, 0, 0, 1], 0));
+  }
+
+  setAtrributes = (id, vertices, angle, centroid) => {
+    this.id = id;
+
+    let count = 0;
+    vertices.forEach(v => {
+      if (count == 0) {
+        this.vertices.coor = v.coor;
+        this.vertices.color = v.color;  
+      } else {
+        this.vertices.push(new Point(v.coor, v.color));
+      }
+      count++;
+    });
+
+    this.angle = angle;
+    this.centroid.coor = centroid.coor;
+    this.centroid.color = centroid.color;
+    this.centroid.id = centroid.id;
+    this.centroid.isCentroid = centroid.isCentroid;
   }
 
   isFirstVertex = () => {
