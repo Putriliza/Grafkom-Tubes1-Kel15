@@ -76,7 +76,7 @@ const square_length_value = document.getElementById('square-length-value');
 
 square_length_slider.addEventListener('input', (e) => {
   const length = parseFloat(e.target.value);
-  square_length_value.innerHTML = `Length: ${length}`;
+  square_length_value.innerHTML = `Side Length: ${length}`;
   if (selectedObjectId != -1) {
     if (objects[selectedObjectId].getModelName() == 'Square') {
       objects[selectedObjectId].setLength(length);
@@ -87,6 +87,19 @@ square_length_slider.addEventListener('input', (e) => {
 
 // SPECIAL METHOD RECTANGLE
 const sm_rectangle = document.getElementById('special-method-rectangle');
+const rectangle_length_slider = document.getElementById('rectangle-length-slider');
+const rectangle_length_value = document.getElementById('rectangle-length-value');
+
+rectangle_length_slider.addEventListener('input', (e) => {
+  const length = parseFloat(e.target.value);
+  rectangle_length_value.innerHTML = `Length: ${length}`;
+  if (selectedObjectId != -1) {
+    if (objects[selectedObjectId].getModelName() == 'Rectangle') {
+      objects[selectedObjectId].setLength(length);
+    }
+  }
+  console.log(objects[selectedObjectId].getLength());
+});
 
 // SPECIAL METHOD POLYGON
 const sm_polygon = document.getElementById('special-method-polygon');
@@ -111,6 +124,8 @@ const setPropertyDisplay = () => {
       square_length_value.innerHTML = `Side Length: ${square_length_slider.value}`
     } else if (objects[selectedObjectId].getModelName() == 'Rectangle') {
       setter('none', 'none', 'block', 'none');
+      rectangle_length_slider.value = objects[selectedObjectId].getLength();
+      rectangle_length_value.innerHTML = `Length: ${rectangle_length_slider.value}`
     } else if (objects[selectedObjectId].getModelName() == 'Polygon') {
       setter('none', 'none', 'none', 'block');
     } else {
