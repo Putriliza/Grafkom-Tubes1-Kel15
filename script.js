@@ -129,6 +129,9 @@ const setDrawStatus = () => {
     case '':
       draw_status.innerHTML = 'No action, click a button to draw';
       break;
+    case 'vertex-selected':
+      draw_status.innerHTML = `Selecting vertex ${selectedVertexId} of object ${selectedObjectId}`;
+      break;
     case 'drag':
       draw_status.innerHTML = `Dragging object ${selectedObjectId} ...`;
       break;
@@ -309,7 +312,7 @@ canvas.addEventListener('mouseup', (e) => {
           selectedVertexId = hoveredVertexId;
 
           if (clickedVertex.isSelected) {
-            drawState = 'drag';
+            drawState = 'vertex-selected';
 
             objects.forEach((obj) => {
               obj.vertices.forEach((vertex) => {
@@ -359,7 +362,14 @@ canvas.addEventListener('mouseup', (e) => {
     }
   } else if (drawState == 'drag2') {
     drawState = '';
-
+  } else if (drawState == 'vertex-selected') {
+      if (hoveredVertexId == selectedVertexId){
+        drawState = 'drag';
+      }else{
+        objects[hoveredObjectId].vertices[selectedVertexId].isSelected = false
+        selectedVertexId = hoveredVertexId
+        objects[hoveredObjectId].vertices[selectedVertexId].isSelected = true
+      } 
   } else if (drawState == 'selected') {
 
     if (hoveredObjectId != -1) {
