@@ -106,10 +106,10 @@ class Model {
       });  
     }
 
-    rotate = (newAngle) => {
+    rotate = (newAngle, isMoving = false) => {
       
       const angleInDegrees = newAngle - this.angle
-      this.angle = newAngle
+      this.angle = isMoving ? this.angle : newAngle
       const angleInRadians = angleInDegrees * Math.PI / 180
       
       this.vertices.forEach((vertex) => {
@@ -217,7 +217,6 @@ class Square extends Model {
   }
   
   moveVertex = (id, coor, moving = false) => {
-
     // initialize square
     if (!moving){
       this.vertices[id].setCoor(coor);
@@ -225,13 +224,21 @@ class Square extends Model {
       return
     } 
 
-    // var deltaX = this.vertices[id].coor[0] - coor[0];
-    // var deltaY = this.vertices[id].coor[1] - coor[1];
-    // var rad= Math.atan2(deltaY, deltaX);
-    // rad = rad * 180 / Math.PI
-    // // this.rotate(rad)
-    this.dilation(coor, id);
+    // Old angle
+    var oldX = this.vertices[id].coor[0] - this.centroid.coor[0];
+    var oldY = this.vertices[id].coor[1] - this.centroid.coor[1]; 
+
+    // New angle
+    var newX = coor[0] - this.centroid.coor[0]
+    var newY = coor[1] - this.centroid.coor[1]
+
+    var angle = Math.atan2(newY, newX) - Math.atan2(oldY, oldX)
+    angle = angle * 180 / Math.PI
+
+    this.rotate(angle, true)
+    this.dilation(coor, id, true);
   }
+
   setAtrributes = (id, vertices, angle, centroid) => {
     this.id = id;
 
@@ -340,13 +347,19 @@ class Rectangle extends Model {
       this.setCentroid();
       return
     } 
+    // Old angle
+    var oldX = this.vertices[id].coor[0] - this.centroid.coor[0];
+    var oldY = this.vertices[id].coor[1] - this.centroid.coor[1]; 
 
-    // var deltaX = this.vertices[id].coor[0] - coor[0];
-    // var deltaY = this.vertices[id].coor[1] - coor[1];
-    // var rad= Math.atan2(deltaY, deltaX);
-    // rad = rad * 180 / Math.PI
-    // // this.rotate(rad)
-    this.dilation(coor, id);
+    // New angle
+    var newX = coor[0] - this.centroid.coor[0]
+    var newY = coor[1] - this.centroid.coor[1]
+
+    var angle = Math.atan2(newY, newX) - Math.atan2(oldY, oldX)
+    angle = angle * 180 / Math.PI
+
+    this.rotate(angle, true)
+    this.dilation(coor, id, true);
   }
 
   setAtrributes = (id, vertices, angle, centroid) => {
