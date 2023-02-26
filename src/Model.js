@@ -384,6 +384,8 @@ class Rectangle extends Model {
 
     this.vertices[id].setCoor(coor)
     this.vertices[dict[id][1]].coor[0] = coor[0]
+    this.vertices[dict[id][1]].coor[1] = this.vertices[dict[id][0]].coor[1]
+    this.vertices[dict[id][2]].coor[0] = this.vertices[dict[id][0]].coor[0]
     this.vertices[dict[id][2]].coor[1] = coor[1]
     this.setCentroid()
   }
