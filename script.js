@@ -45,6 +45,7 @@ rotation_degree_slider.addEventListener('input', (e) => {
   if (selectedObjectId != -1) {
     objects[selectedObjectId].rotate(degree) 
   }
+  rotation_degree_value.innerHTML = `Rotation degree: ${degree}`  
 });
 
 delete_vertex_button.addEventListener('click', (e) => {
@@ -216,7 +217,7 @@ const setDrawStatus = () => {
       draw_status.innerHTML = `Translating object ${selectedObjectId}, double click to finish ...`;
       break;
     case 'dilation':
-      draw_status.innerHTML = `Dilating object ${selectedObjectId}, click to finish ...`;
+      draw_status.innerHTML = `Dilating + Rotating object ${selectedObjectId}, click to finish ...`;
       break;
     case 'line':
       draw_status.innerHTML = 'Drawing line, choose first vertex ...';
@@ -244,7 +245,7 @@ const setDrawStatus = () => {
       break;
     default:
       if (selectedObjectId != -1) {
-        draw_status.innerHTML = `Modifying object ${selectedObjectId}, click center to translate or click vertex to dilate`;
+        draw_status.innerHTML = `Modifying object ${selectedObjectId}, click center to translate or click vertex to dilate + rotate`;
       } else {
         draw_status.innerHTML = 'No action, click a button to draw';
       }
@@ -286,14 +287,14 @@ canvas.addEventListener('mousemove', (e) => {
   // MODIFY OBJECT
   if (drawState == 'drag' || drawState == 'drag2') {
     drawState = 'drag2';
-    let isSquare = objects[selectedObjectId].type == 'Square' || 'Rectangle'
-    objects[selectedObjectId].moveVertex(selectedVertexId, currentCoor, isSquare);
+    let isMoving = objects[selectedObjectId].type == 'Square' || 'Rectangle'
+    objects[selectedObjectId].moveVertex(selectedVertexId, currentCoor, isMoving);
 
   } else if (drawState == 'translation') {
     objects[selectedObjectId].translation(currentCoor);
 
   } else if (drawState == 'dilation') {
-    objects[selectedObjectId].dilation(currentCoor, selectedVertexId);
+    objects[selectedObjectId].dilateAndRotate(selectedVertexId, currentCoor);
   }
   
   
