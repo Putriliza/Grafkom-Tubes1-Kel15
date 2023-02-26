@@ -32,7 +32,7 @@ var filePath = '';
 animate_button.addEventListener('click', (e) =>{
   if (selectedObjectId != -1){
     objects[selectedObjectId].animate()
-    drawState = 'animate'
+    
   }
 })
 
