@@ -67,18 +67,27 @@ convex_hull_button.addEventListener('click', (e) => {
     let hull = convexHull(objects[selectedObjectId].vertices);
 
     objects[selectedObjectId].vertices.forEach(objVertices => {
-      let isHull = false;
-
-      hull.forEach(h => {
-        if (objVertices.id == h.id) {
-          isHull = true;
-        }
-      });
-
-      if (!isHull) {
-        objects[selectedObjectId].deleteVertex(objVertices.id);
-      }
+      objects[selectedObjectId].deleteVertex(objVertices.id);
     });
+
+    hull.forEach(h => {
+      objects[selectedObjectId].addVertex(h.coor, h.color);
+    });
+
+
+    // objects[selectedObjectId].vertices.forEach(objVertices => {
+    //   let isHull = false;
+
+    //   hull.forEach(h => {
+    //     if (objVertices.id == h.id) {
+    //       isHull = true;
+    //     }
+    //   });
+
+    //   if (!isHull) {
+    //     objects[selectedObjectId].deleteVertex(objVertices.id);
+    //   }
+    // });
   }  
 })
 
