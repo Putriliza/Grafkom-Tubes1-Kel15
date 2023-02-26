@@ -25,8 +25,16 @@ const change_color_input = document.getElementById('change-color-input');
 
 const save_objects_button = document.getElementById('save-objects-button');
 const load_objects_button = document.getElementById('load-objects-button');
+const animate_button = document.getElementById('animate-button');
 const file = document.getElementById('file');
 var filePath = '';
+
+animate_button.addEventListener('click', (e) =>{
+  if (selectedObjectId != -1){
+    objects[selectedObjectId].animate()
+    drawState = 'animate'
+  }
+})
 
 line_length_slider.addEventListener('input', (e) => {
   const length = parseFloat(e.target.value);

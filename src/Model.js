@@ -144,7 +144,38 @@ class Model {
       angle = angle * 180 / Math.PI
 
       this.rotate(angle, true)
+      
       this.dilation(coor, id, true);
+    }
+
+    animate = async() => {
+      var id = null
+      var degree = 0
+      var pos = this.centroid.coor
+      clearInterval(id);
+      id = setInterval(frame, 60);
+
+      const rotate = () => this.rotate(degree)
+      const translation = () => this.translation(pos)
+
+      function frame() {
+        if (degree == 720) {
+          clearInterval(id);
+        } else if (degree <= 360) {
+          pos[0] += 0.01
+          pos[1] += 0.01
+          degree += 5
+          translation()
+          rotate()
+        } else {
+          pos[0] -= 0.01
+          pos[1] -= 0.01
+          degree += 5
+          translation()
+          rotate()
+        }
+      }
+      
     }
 }
   
