@@ -224,21 +224,30 @@ class Square extends Model {
       return
     } 
 
-    // Old angle
-    var oldX = this.vertices[id].coor[0] - this.centroid.coor[0];
-    var oldY = this.vertices[id].coor[1] - this.centroid.coor[1]; 
+    var dict = {
+      0: [3, 1 , 2],
+      1: [2, 0 , 3],
+      2: [1, 0 , 3],
+      3: [0, 1 , 2],
+    }
 
-    // New angle
-    var newX = coor[0] - this.centroid.coor[0]
-    var newY = coor[1] - this.centroid.coor[1]
+    var L = dist(coor, this.vertices[dict[id][0]].coor) * Math.sin(Math.PI / 4)
+  
+    var LX = coor[0] - this.vertices[dict[id][0]].coor[0]  < 0 ? L : -L
+    var LY = coor[1] - this.vertices[dict[id][0]].coor[1]< 0 ? -L : L
+    
+    this.vertices[id].coor[0] = this.centroid.coor[0] - LX/2
+    this.vertices[id].coor[1] = this.centroid.coor[1] + LY/2
 
-    var angle = Math.atan2(newY, newX) - Math.atan2(oldY, oldX)
-    angle = angle * 180 / Math.PI
+    this.vertices[dict[id][1]].coor[0] = this.vertices[id].coor[0]
+    this.vertices[dict[id][1]].coor[1] = this.vertices[dict[id][0]].coor[1]
+    this.vertices[dict[id][2]].coor[0] = this.vertices[dict[id][0]].coor[0]
+    this.vertices[dict[id][2]].coor[1] = this.vertices[id].coor[1]
 
-    this.rotate(angle, true)
-    this.dilation(coor, id, true);
+    this.setCentroid()
   }
-
+  
+  
   setAtrributes = (id, vertices, angle, centroid) => {
     this.id = id;
 
@@ -347,19 +356,18 @@ class Rectangle extends Model {
       this.setCentroid();
       return
     } 
-    // Old angle
-    var oldX = this.vertices[id].coor[0] - this.centroid.coor[0];
-    var oldY = this.vertices[id].coor[1] - this.centroid.coor[1]; 
+    
+    var dict = {
+      0: [3, 1 , 2],
+      1: [2, 0 , 3],
+      2: [1, 3 , 0],
+      3: [0, 2 , 1],
+    }
 
-    // New angle
-    var newX = coor[0] - this.centroid.coor[0]
-    var newY = coor[1] - this.centroid.coor[1]
-
-    var angle = Math.atan2(newY, newX) - Math.atan2(oldY, oldX)
-    angle = angle * 180 / Math.PI
-
-    this.rotate(angle, true)
-    this.dilation(coor, id, true);
+    this.vertices[id].setCoor(coor)
+    this.vertices[dict[id][1]].coor[0] = coor[0]
+    this.vertices[dict[id][2]].coor[1] = coor[1]
+    this.setCentroid()
   }
 
   setAtrributes = (id, vertices, angle, centroid) => {
