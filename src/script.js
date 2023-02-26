@@ -59,6 +59,7 @@ rotation_degree_slider.addEventListener('input', (e) => {
 delete_vertex_button.addEventListener('click', (e) => {
   if (selectedObjectId != -1) {
     objects[selectedObjectId].deleteVertex(selectedVertexId)
+    drawState=''
   }
 });
 
