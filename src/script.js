@@ -108,7 +108,7 @@ file.addEventListener("change", function(event) {
 
 load_objects_button.addEventListener('click', (e) => {
   if (filePath != '') {
-    loadObjectsFromJsonFileAndAddToCanvas(objects, filePath);
+    loadObjectsFromJsonFileAndAddToCanvas(objects, '../test/' + filePath);
   }
 })
 
